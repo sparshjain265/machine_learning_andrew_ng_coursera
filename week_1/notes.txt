@@ -1,0 +1,6 @@
+Machine Learning can be classified into Supervised and Unsupervised Learning.
+    Supervised Learning can be basically classified into Regression and Classification Problems.
+        Regression problem works loosely on continuous range of outputs.
+        Classification problem works on a discrete range of outputs.
+    Unsupervised Learning
+        An example is clustering problem.
