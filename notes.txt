@@ -1,6 +1,53 @@
+Lecture 1: Introduction
+
 Machine Learning can be classified into Supervised and Unsupervised Learning.
     Supervised Learning can be basically classified into Regression and Classification Problems.
         Regression problem works loosely on continuous range of outputs.
         Classification problem works on a discrete range of outputs.
     Unsupervised Learning
         An example is clustering problem.
+
+-------------------------------------------------
+Lecture 2: Model and Cost Function
+
+Supervised Learning:
+    We have a data set (Training Set).
+
+Notations:
+    m 			= number of training examples
+	x's			= 'input' variables / features
+	y's 		= 'output' variables / 'target' variables
+	(x, y)		= single training example
+	(x^(i), y^(i))	= i^th example
+
+Supervised Learning:
+	Training Set --> Learning Algorithm --> h (hypothesis | function from X -> Y) 
+
+	To represent h:
+		h_theta(x) = theta_0 + theta_1(x) (Linear Regression with one variable (univariate))
+	
+	Cost:
+		minimize over theta_0, theta_1 (1/2m)*sum(1, m, (h_theta(x) - y)^2)
+		Cost function:
+			J(theta_0, theta_1) = (1/2m)*sum(1, m, (h_theta(x) - y)^2) (Squared Error Cost Function)
+		minimize over theta_0, theta_1 J(theta_0, theta_1)
+
+Gradient Descent:
+	1. Start with some value
+	2. Get closer to minimum
+
+	Finds local minimum
+
+	algo:
+		theta_j := theta_j - alpha (del by del(theta_j))(J) for all j
+
+		alpha = learning rate
+
+		Important! Simultaneous update
+		temp_j := theta_j - alpha (del by del(theta_j))(J) for all j
+		theta_j := temp_j for all j
+
+Gradient Descent for Linear Regression:
+	Cost function for linear regression is convex! 
+
+	'Batch Gradient Descent' - each step of gradient descent uses all training examples.
