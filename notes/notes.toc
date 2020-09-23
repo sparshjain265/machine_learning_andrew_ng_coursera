@@ -1,0 +1,13 @@
+\contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Supervised Learning}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Regression Problem}{2}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Classification Problems}{2}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Unsupervised Learning}{2}{section.1.2}%
+\contentsline {chapter}{\numberline {2}Linear Regression with One Variable}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Notations}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Supervised Learning}{3}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Gradient Descent}{4}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Gradient Descent for Linear Regression}{4}{section.2.4}%
+\contentsline {chapter}{Appendices}{5}{section*.8}%
+\contentsline {chapter}{\numberline {A}Lecture 1}{6}{appendix.1.A}%
+\contentsline {chapter}{\numberline {B}Lecture 2}{46}{appendix.1.B}%
