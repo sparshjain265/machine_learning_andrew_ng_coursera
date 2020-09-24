@@ -7,6 +7,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{pdfpages}
 \usepackage[toc,page]{appendix}
+\usepackage{minted}
 
 %%% blank footnote
 \newcommand\blfootnote[1]{
@@ -406,6 +407,127 @@ Classify into categories (binary or multiple).
 
 \subsection*{Non-linear Decision Boundaries}
 Use same technique as polynomial regression for features.
+
+\section{Cost Function}
+\begin{align*}
+	\text{Training Set} & :
+	\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ./dots, (x^{(m)}, y^{(m)})\} \\
+	x                   & = \begin{bmatrix}
+		x_0    \\
+		x_1    \\
+		\vdots \\
+		x_n    \\
+	\end{bmatrix} \in \R^{n+1}        \\
+	x_0                 & = 1                                              \\
+	y                   & \in \{0, 1\}                                     \\
+	h_\theta(x)         & = \frac{1}{1 + e^{-\theta^Tx}}                   \\
+\end{align*}
+
+\subsection*{How to choose parameter $\theta$?}
+
+\paragraph{Linear Regression:}
+\begin{align*}
+	J(\theta)                     & =
+	\frac{1}{m}\sum_{i = 1}^m\half(h_\theta(x^{(i)}) - y^{(i)})^2      \\
+	J(\theta)                     & =
+	\frac{1}{m}\sum_{i = 1}^m\mathrm{Cost}(h_\theta(x^{(i)}), y^{(i)}) \\
+	\mathrm{Cost}(h_\theta(x), y) & = \half(h_\theta(x) - y)^2         \\
+\end{align*}
+
+\paragraph{Logistic Regression:}
+\begin{align*}
+	\mathrm{Cost}(h_\theta(x), y) & = \begin{cases}
+		-\log(h_\theta(x))     & y = 1 \\
+		-\log(1 - h_\theta(x)) & y = 0 \\
+	\end{cases}    \\
+	\mathrm{Cost}(h_\theta(x), y) & = 0 \text{ if } h_\theta(x) = y \\
+	\mathrm{Cost}(h_\theta(x), y) &
+	\tends \inf \text{ if } y = 0 \text{ and } h_\theta(x) \tends 1 \\
+	\mathrm{Cost}(h_\theta(x), y) &
+	\tends \inf \text{ if } y = 1 \text{ and } h_\theta(x) \tends 0 \\
+\end{align*}
+
+\paragraph{Note:} $y = 0$ or $1$ always.
+\begin{align*}
+	\mathrm{Cost}(h_\theta(x), y) &
+	= -y\log(h_\theta(x)) - (1-y)\log(1 - h_\theta(x))                              \\
+	J(\theta)                     &
+	= \frac{1}{m}\sum_{i = 1}^m\mathrm{Cost}\left(h_\theta(x^{(i)}), y^{(i)}\right) \\
+	                              &
+	= -\frac{1}{m}\left[
+		\sum_{i=1}^m\left(
+		y^{(i)}\log(h_\theta(x^{(i)})) + (1 - y^{(i)})\log(1 - h_\theta(x^{(i)}))
+		\right)
+		\right]                                                                         \\
+\end{align*}
+
+\paragraph{To fit parameters $\theta$:}
+\begin{equation*}
+	\minimize_\theta J(\theta)
+\end{equation*}
+
+\paragraph{To make a prediction given a new $x$:}
+\begin{equation*}
+	\text{Output } h_\theta(x) = \frac{1}{1 + e^{-\theta^Tx}}
+\end{equation*}
+
+\subsubsection{Gradient Descent:}
+Simultaneously update all $\theta_j$
+\begin{equation*}
+	\theta_j := \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta)
+\end{equation*}
+Plug in the derivative
+\begin{equation*}
+	\theta_j := \theta_j - \alpha\frac{1}{m}\sum_{i=1}^m\left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)x_j^{(i)}
+\end{equation*}
+Don't forget feature scaling!
+
+\section{Advanced Optimization:}
+Something better than gradient descent:
+\begin{enumerate}
+	\item Conjugate Gradient
+	\item BFGS
+	\item L-BFGS
+\end{enumerate}
+Advantages:
+\begin{enumerate}
+	\item No need to manually pick $\alpha$
+	\item Often faster than gradient descent
+\end{enumerate}
+Disadvantages:
+\begin{enumerate}
+	\item More complex
+\end{enumerate}
+Use libraries! Beware of bad implementations!
+
+\paragraph{How to use:}
+We first need to provide a function that evaluates the following two functions
+for a given input value of $\theta$.
+\begin{enumerate}
+	\item $J(\theta)$
+	\item $\frac{\partial}{\partial\theta_j}J(\theta)$
+\end{enumerate}
+
+\begin{minted}{octave}
+% We can write a single function that can return both of these:
+function [jVal, gradient] = costFunction(theta)
+	jVal = [...code to compute J(theta)...];
+	gradient = [...code to compute derivative of J(theta)...];
+end
+\end{minted}
+
+Then we can use octave's \emph{fminunc()} optimization algorithm along with the
+\emph{optimset()} function that creates an object containing the options we
+want to send to \emph{fminunc()}.
+\begin{minted}{octave}
+options = optimset('GradObj', 'on', 'MaxIter', 100);
+initialTheta = zeros(2,1);
+	[optTheta, functionVal, exitFlag] = fminunc(@costFunction, 
+		initialTheta, options);
+\end{minted}
+
 
 \blfootnote{Check \href{lecture_pdf/Lecture6.pdf}{Lecture6.pdf} for more details.}
 
