@@ -373,6 +373,42 @@ If $X^TX$ is non-invertible, common causes are
 \chapter{Octave Tutorial}
 Check \href{lecture_pdf/Lecture5.pdf}{Lecture5.pdf} for more details.
 
+\chapter{Classification}
+Classify into categories (binary or multiple).
+
+\section{Logistic Regression}
+\begin{align*}
+	0 \le\      & h_\theta(x) \le 1                                               \\
+	h_\theta(x) & = g(\theta^Tx)                                                  \\
+	g(z)        & = \frac{1}{1 + e^{-z}}        &
+	\text{$g$ is called a \emph{sigmoid} function or a \emph{logistic} function.} \\
+	h_\theta(x) & = \frac{1}{1 + e^{\theta^Tx}}                                   \\
+\end{align*}
+
+\subsection*{Interpretation of Hypothesis Output}
+\begin{align*}
+	h_\theta(x) & = \text{estimated probability that $y = 1$ on input $x$} \\
+	h_\theta(x) & = P(y = 1 | x; \theta) =
+	\text{probability that $y = 1$, given $x$, parameterized by $\theta$}  \\
+\end{align*}
+\begin{equation*}
+	P(y = 0 | x; \theta) + P(y = 1 | x; \theta) = 1                  \\
+\end{equation*}
+
+\section{Decision Boundary}
+\begin{align*}
+	\text{Predict: } y & = 1 & \text{ if } h_\theta(x) \ge 0.5         \\
+	                   &     & (\theta^Tx \ge 0)                       \\
+	\text{Predict: } y & = 0 & \text{ if } h_\theta(x) < 0.5           \\
+	                   &     & (\theta^Tx < 0)                         \\
+	\theta^Tx          & = 0 & \text{is the \emph{decision boundary.}} \\
+\end{align*}
+
+\subsection*{Non-linear Decision Boundaries}
+Use same technique as polynomial regression for features.
+
+\blfootnote{Check \href{lecture_pdf/Lecture6.pdf}{Lecture6.pdf} for more details.}
+
 \begin{appendices}
 	% \chapter{Lecture 1} \label{lecture1}
 	% \includepdf[pages=-, width=0.9\textwidth]{lecture_pdf/Lecture1.pdf}
