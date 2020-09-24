@@ -28,6 +28,26 @@
 \DeclareMathOperator*{\minimize}{minimize}
 %%%
 
+%%%
+\def\N{\mathbb{N}}
+\def\Z{\mathbb{Z}}
+\def\Q{\mathbb{Q}}
+\def\R{\mathbb{R}}
+\def\F{\mathbb{F}}
+
+\def\tends{\rightarrow}
+\def\into{\rightarrow}
+\def\half{\frac{1}{2}}
+\def\quarter{\frac{1}{4}}
+
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+\newcommand{\norm}[1]{\left\Vert #1 \right\Vert}
+\newcommand{\card}[1]{\left\vert #1 \right\vert}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+
+\DeclareMathOperator{\dia}{dia}
+%%%
 
 \title{Notes\\
 \large Machine Learning by Andrew Ng on Coursera}
@@ -140,25 +160,23 @@ $$
 
 \paragraph*{Elements of the matrix:}
 \begin{align*}
-	A      & =
-	\begin{bmatrix}
+	A      & =	\begin{bmatrix}
 		1 & 2 & 3 \\
 		4 & 5 & 6 \\
-	\end{bmatrix}                                          \\
+	\end{bmatrix}                                \\
 	A_{ij} & = \text{``$i,j$ entry'' in the $i^{th}$ row, $j^{th}$ col} \\
 \end{align*}
 
 \section{Vector}
 An $n \times 1$ matrix.
 \begin{align*}
-	y & =
-	\begin{bmatrix}
+	y & =	\begin{bmatrix}
 		1 \\
 		2 \\
 		3 \\
 		4 \\
-	\end{bmatrix}   \\
-	y_i = i^{th} \text{ element} \\
+	\end{bmatrix} \\
+	y_i = i^{th} \text{ element}    \\
 \end{align*}
 
 \paragraph*{Note:} Uppercase for matrices, lowercase for vectors.
@@ -193,13 +211,11 @@ Let $A$ be an $m \times n$ matrix and let $B = A^T$, then
 $$ B_{ij} = A_{ji} $$
 Example:
 \begin{align*}
-	A       & =
-	\begin{bmatrix}
+	A       & =	\begin{bmatrix}
 		1 & 2 & 3 \\
 		4 & 5 & 6 \\
 	\end{bmatrix} \\
-	B = A^T & =
-	\begin{bmatrix}
+	B = A^T & =	\begin{bmatrix}
 		1 & 4 \\
 		2 & 5 \\
 		3 & 6 \\
@@ -209,7 +225,153 @@ Example:
 % \blfootnote{Check \autoref{lecture3} for more details.}
 \blfootnote{Check \href{lecture_pdf/Lecture3.pdf}{Lecture3.pdf} for more details.}
 
+\chapter{Linear Regression with Multiple Variables}
 
+\section{Notations}
+\begin{align*}
+	n         & = \text{number of features}                                \\
+	x^{(i)}   & = \text{input (features) of $i^{th}$ training example}     \\
+	x_j^{(i)} & = \text{value of feature $j$ of $i^{th}$ training example} \\
+\end{align*}
+
+\section{Hypothesis}
+\subsection*{Previously:}
+\begin{equation*}
+	h_\theta(x) = \theta_0 + \theta_1x\\
+\end{equation*}
+\subsection*{Now:}
+\begin{equation*}
+	h_\theta(x) = \theta_0	+ \theta_1x_1 + \theta_2x_2 + \dots + \theta_nx_n\\
+\end{equation*}
+
+For convinience, define $x_0 = 1$. So
+\begin{align*}
+	h_\theta(x) & = \theta_0x_0	+ \theta_1x_1 + \theta_2x_2 + \dots + \theta_nx_n   \\
+	\\
+	x           & = \begin{bmatrix}
+		x_0    \\
+		x_1    \\
+		x_2    \\
+		\vdots \\
+		x_n    \\
+	\end{bmatrix} \in \R^{n+1}                      &
+	\theta      & = \begin{bmatrix}
+		\theta_0 \\
+		\theta_1 \\
+		\theta_2 \\
+		\vdots   \\
+		\theta_n \\
+	\end{bmatrix} \in \R^{n+1}                        \\
+	\\
+	h_\theta(x) & = \theta^Tx                                                      \\
+\end{align*}
+
+\section{Gradient Descent}
+
+\begin{align*}
+	\text{Hypothesis}       & :  h_\theta(x) = \theta^Tx
+	                        & = \theta_0x_0 + \theta_1x_1 + \dots + \theta_nx_n              \\
+	\text{Parameters}       & : \theta
+	                        & =\theta_0, \theta_1, \dots, \theta_n                           \\
+	\text{Cost Function}    & : J(\theta) = J(\theta_0, \theta_1, \dots, \theta_n)
+	                        & =\frac{1}{2m}\sum_{i=1}^m(h_\theta(x^{(i)}) - y^{(i)})^2       \\
+	\text{Gradient Descent} & :                                                              \\
+	                        & \text{Repeat} \{                                               \\
+	\theta_j                & : =
+	\theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta)                              \\
+	                        & =
+	\theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta_0, \theta_1, \dots, \theta_n) \\
+	                        & =
+	\theta_j - \alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x^{(i)} - y^{(i)})x_j^{(i)})           \\
+	\}                      & (\text{simultaneously update }
+	\forall j = 0, 1, \dots, n)
+\end{align*}
+
+\subsection{Feature Scaling}
+\paragraph{Idea:} Make sure features are on a similar scale.
+
+Get every feature into approximately a $-1 \le x_i \le 1$ range.
+
+\subsection{Mean Normalization}
+Replace $x_i$ with $x_i - \mu_i$ to make features have approximately zero mean
+(Do not apply to $x_0 = 1$).
+
+\subsection*{General Rule}
+\begin{equation*}
+	x_i \leftarrow \frac{x_i - \mu_i}{S_i}
+\end{equation*}
+where
+\begin{align*}
+	\mu_i & = \text{average value of } x_i            \\
+	S_i   & = \text{range (max - min)}           & or \\
+	      & = \sigma \text{(standard deviation)}
+\end{align*}
+
+\subsection{Learning Rate}
+$J(\theta)$ should decrease after every iteration. $\#$iterations vary a lot.
+
+Example \emph{Automatic Convergence Test:} Declare convergence if $J(\theta)$
+decreases by less than $\epsilon\ (\text{say } 10^{-3})$ in one iteration.
+
+If $J(\theta)$ increases, use smaller $\alpha$. Too small $\alpha$ means slow convergence.
+
+To choose $\alpha$, try $\dots,\ 0.001,\ 0.003,\ 0.01,\ 0.03,\ 0.1,\ 0.3,\ 1,\ \dots$
+
+\section{Features and Polynomial Regression}
+\subsection{Features}
+Get an insight in your problem and choose better features (may even combine/separate features).
+
+Ex: size = length $\into$ breadth.
+
+\subsection{Polynomial Regression}
+Ex: \begin{align*}
+	x_1 & = size   \\
+	x_2 & = size^2 \\
+	x_3 & = size^3 \\
+\end{align*}
+
+\section{Normal Equation}
+Solve for $\theta$ analytically!
+\begin{align*}
+	x^{(i)} & = \begin{bmatrix}
+		x_0^{(i)} \\
+		x_1^{(i)} \\
+		\vdots    \\
+		x_n^{(i)} \\
+	\end{bmatrix} & \in & \ \R^{n+1}            \\
+	X       & = \begin{bmatrix}
+		(x^{(1)})^T \\
+		(x^{(2)})^T \\
+		\vdots      \\
+		(x^{(m)})^T \\
+	\end{bmatrix} & \in & \ \R^{m \times (n+1)} \\
+	        & = \begin{bmatrix}
+		x_0 & x_1 & \dots & x_n \\
+	\end{bmatrix} & \in & \ \R^{m \times (n+1)} \\
+	y       & = \begin{bmatrix}
+		y^{(1)} \\
+		y^{(2)} \\
+		\vdots  \\
+		y^{(m)} \\
+	\end{bmatrix} & \in & \ \R^m                \\
+	\theta  & = (X^TX)^{-1}X^Ty                                          \\
+\end{align*}
+
+Inverse of a matrix grows as $O(n^3)$, use wisely.
+
+\subsection{Non Invertibility of \texorpdfstring{$X^TX$}{}}
+Use 'pinv' function in Octave (pseudo-inverse) instead of 'inv' function (inverse).
+
+If $X^TX$ is non-invertible, common causes are
+\begin{enumerate}
+	\item Redundant features (linearly dependent)
+	\item Too many features ($m \le n$). In this case, delete some features or use \emph{regularization}
+\end{enumerate}
+
+\blfootnote{Check \href{lecture_pdf/Lecture4.pdf}{Lecture4.pdf} for more details.}
+
+\chapter{Octave Tutorial}
+Check \href{lecture_pdf/Lecture5.pdf}{Lecture5.pdf} for more details.
 
 \begin{appendices}
 	% \chapter{Lecture 1} \label{lecture1}
