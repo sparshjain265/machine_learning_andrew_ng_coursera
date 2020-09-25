@@ -99,3 +99,46 @@ $$
 	h_\Theta(x) = a^{(3)}          & = g(z^{(3)})                 \\
 \end{align*}
 Other network architechtures are possible!
+
+\paragraph{Non-linear classification example:} XOR/XNOR\\
+$x_1, x_2$ are binary ($0$ or $1$)
+\begin{align*}
+	y & = x_1\ \operatorname{XOR}\ x_2                          & or \\
+	  & = x_1\ \operatorname{XNOR}\ x_2
+	  & \equiv \operatorname{NOT}(x_1\ \operatorname{XOR}\ x_2)      \\
+\end{align*}
+
+\footnote{Work out more examples (OR, NOT, (NOT $x_1$) AND (NOT $x_2$)!}
+Simple example: AND
+\begin{align*}
+	x_0               & = 0                          \\
+	x_1, x_2          & \in \{0,1\}                  \\
+	y                 & = x_1 \operatorname{AND} x_2 \\
+	\Theta_{10}^{(1)} & = -30                        \\
+	\Theta_{11}^{(1)} & = 20                         \\
+	\Theta_{12}^{(1)} & = 20                         \\
+	h_\Theta(x)       & = g(-30 + 20x_1 + 20x_2)     \\
+\end{align*}
+\begin{table*}[h!]
+	\begin{center}
+		\begin{tabular}{c c | r}
+			$x_1$ & $x_2$ & $h_\Theta(x)$      \\
+			\hline                             \\
+			0     & 0     & $g(-30) \approx 0$ \\
+			0     & 1     & $g(-10) \approx 0$ \\
+			1     & 0     & $g(-10) \approx 0$ \\
+			1     & 1     & $g(10) \approx 1$  \\
+		\end{tabular}
+	\end{center}
+\end{table*}
+
+We can combine AND, OR, NOT, (NOT $x_1$) AND (NOT $x_2$) to get
+XNOR, XOR, etc.
+
+\section{Multi-Class Classification}
+Extension of One-vs-All Method!
+
+\paragraph{Example:} Say 4 classes, so 4 output units.
+So, $y \in \R^4$ with $1$ in corresponding class and $0$ elsewhere.
+
+\blfootnote{Check \href{lecture_pdf/Lecture8.pdf}{Lecture8.pdf} for more details.}
