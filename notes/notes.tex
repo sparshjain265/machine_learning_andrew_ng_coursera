@@ -528,6 +528,15 @@ initialTheta = zeros(2,1);
 		initialTheta, options);
 \end{minted}
 
+\section{Multi-Class Classification}
+\subsection{One vs All}
+Build a separate binary classifier $h_\theta^{(i)}(x)$ for each class against all
+other classes.
+\begin{equation*}
+	h\theta^{(i)} = P(y = i | x; \theta)\ \forall i
+\end{equation*}
+On a new input $x$, to make a prediction, pick the class $i$ that maximizes
+$h_\theta^{(i)}(x)$
 
 \blfootnote{Check \href{lecture_pdf/Lecture6.pdf}{Lecture6.pdf} for more details.}
 
