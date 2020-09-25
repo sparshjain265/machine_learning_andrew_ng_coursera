@@ -1,0 +1,101 @@
+\chapter{Neural Networks}
+\section{Non-Linear Hypothesis}
+If $\#$features is high, hypothesis could have extremely high
+$\#$terms. Hence the need for non-linear hypothesis.
+
+\section{Neural Networks}
+\begin{itemize}
+	\item \emph{Origins:} Algorithms that try to mimic brain.
+	\item Widely used in 80s and early 90s; diminished in late 90s.
+	\item Resurgance: State-of-the-art technique for many applications.
+\end{itemize}
+
+\section{Model Representation}
+\subsection*{Neuron Model: Logistic Unit}
+\begin{enumerate}
+	\item input layer
+	\item hidden layer / computation layer
+	\item output layer
+	\item activation function ($g()$)
+\end{enumerate}
+parameters $\equiv$ weights
+
+\section{Notations}
+\begin{align*}
+	a_i^{(j)}    = & \text{ \emph{activation} of unit } i \text{ in layer } j \\
+	\Theta^{(j)} = & \text{ matrix of weights controlling}                    \\
+	               & \text{ function mapping from layer } j \text{ to}        \\
+	               & \text{ layer } j + 1                                     \\
+\end{align*}
+
+\paragraph{Example:}
+\begin{align*}
+	\text{layer 1}          & : \{x_1, x_2, x_3\}                   \\
+	\text{layer 2}          & : \{a_1^{(2)}, a_2^{(2)}, a_3^{(2)}\} \\
+	\text{layer 3}          & : \{a_1^{(3)}\}                       \\
+	\\
+	a_1^{(2)}               & = g\left(
+	\Theta_{10}^{(1)}x_0 + \Theta_{11}^{(1)}x_1 + \Theta_{12}^{(1)}x_2 + \Theta_{13}^{(1)}x_3
+	\right)                                                         \\
+	a_2^{(2)}               & = g\left(
+	\Theta_{20}^{(1)}x_0 + \Theta_{21}^{(1)}x_1 + \Theta_{22}^{(1)}x_2 + \Theta_{23}^{(1)}x_3
+	\right)                                                         \\
+	a_3^{(2)}               & = g\left(
+	\Theta_{30}^{(1)}x_0 + \Theta_{31}^{(1)}x_1 + \Theta_{32}^{(1)}x_2 + \Theta_{33}^{(1)}x_3
+	\right)                                                         \\
+	h_\Theta(x) = a_1^{(3)} & = g\left(
+	\Theta_{10}^{(2)}a_0^{(2)} + \Theta_{11}^{(2)}a_1^{(2)} +
+	\Theta_{12}^{(2)}a_2^{(2)} + \Theta_{13}^{(1)}a_3^{(2)}
+	\right)                                                         \\
+\end{align*}
+
+\paragraph{Note:} If network has $s_j$ units in layer $j$, and $s_{j++1}$ units in
+layer $j + 1$, then
+\Large
+$$
+	\Theta^{(j)} \in \R^{s_{j+1} \times (s_j + 1)}
+$$
+\normalsize
+
+\section{Forward Propagation}
+\begin{align*}
+	z_1^{(2)} & =
+	\Theta_{10}^{(1)}x_0 + \Theta_{11}^{(1)}x_1 +
+	\Theta_{12}^{(1)}x_2 + \Theta_{13}^{(1)}x_3 \\
+	z_2^{(2)} & =
+	\Theta_{20}^{(1)}x_0 + \Theta_{21}^{(1)}x_1 +
+	\Theta_{22}^{(1)}x_2 + \Theta_{23}^{(1)}x_3 \\
+	z_3^{(2)} & =
+	\Theta_{30}^{(1)}x_0 + \Theta_{31}^{(1)}x_1 +
+	\Theta_{32}^{(1)}x_2 + \Theta_{33}^{(1)}x_3 \\
+	a_1^{(2)} & = g(z_1^{(2)})                  \\
+	a_2^{(2)} & = g(z_2^{(2)})                  \\
+	a_3^{(2)} & = g(z_3^{(2)})                  \\
+\end{align*}
+\subsection*{Vectorized Implementation}
+\begin{align*}
+	x       & = \begin{bmatrix}
+		x_0  \\
+		x_1  \\
+		x_2  \\
+		x_33 \\
+	\end{bmatrix},\ x_0 = 1 \\
+	z^{(2)} & = \begin{bmatrix}
+		z_1^{(2)} \\
+		z_2^{(2)} \\
+		z_3^{(2)} \\
+	\end{bmatrix}           \\
+\end{align*}
+\begin{align*}
+	a^{(1)}                        & = x
+	                               & \in \R^4                     \\
+	z^{(2)}                        & = \Theta^{(1)}a^{(1)}
+	                               & \in \R^3                     \\
+	a^{(2)}                        & = g(z^{(2)})
+	                               & \in \R^3                     \\
+	\text{\textbf{Add }} a_0^{(2)} & = 1
+	                               & \rightarrow a^{(2)} \in \R^4 \\
+	z^{(3)}                        & = \Theta^{(2)}a^{(2)}        \\
+	h_\Theta(x) = a^{(3)}          & = g(z^{(3)})                 \\
+\end{align*}
+Other network architechtures are possible!
