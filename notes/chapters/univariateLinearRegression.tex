@@ -1,0 +1,64 @@
+\chapter{Linear Regression with One Variable}
+
+\section{Notations}
+\begin{align*}
+    m                  & = \text{number of training examples}             \\
+    x\text{'s}         & = \text{`input' variables / features}            \\
+    y\text{'s}         & = \text{`output' variables / `target' variables} \\
+    (x, y)             & = \text{single training example}                 \\
+    (x^{(i)}, y^{(i)}) & = i^{th} \  \text{example}                       \\
+\end{align*}
+
+\section{Supervised Learning}
+We have a data set (\emph{Training Set}).
+
+Training Set $\rightarrow$ Learning Algorithm $\rightarrow$ $h$ (\emph{hypothesis},
+a function $X \to Y$)
+
+\subsection*{To Represent \texorpdfstring{$h$}{}}
+\begin{equation*}
+    h_\theta(x) = \theta_0 + \theta_1x
+\end{equation*}
+
+\subsection*{Cost}
+\begin{equation*}
+    \minimize_{\theta_0,\ \theta_1} \frac{1}{2m}\sum_1^m(h_\theta(x) - y)^2
+\end{equation*}
+\subsubsection*{Cost Function}
+Squared Error Cost Function
+\begin{equation*}
+    J(\theta_0, \theta_1) = \frac{1}{2m}\sum_1^m(h_\theta(x) - y)^2
+\end{equation*}
+\subsection*{}
+\begin{equation*}
+    \minimize_{\theta_0,\ \theta_1} J(\theta_0, \theta_1)
+\end{equation*}
+
+\section{Gradient Descent}
+Finds local optimum:
+\begin{enumerate}
+    \item Start with some value
+    \item Get closer to optimum
+\end{enumerate}
+
+\subsection*{Algorithm}
+\begin{equation*}
+    \theta_j := \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta) \ \forall j
+\end{equation*}
+
+where $\alpha$ = learning rate
+
+\subsubsection*{Important!}
+Simultaneous Update!
+\begin{align*}
+    temp_j   & := \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta) \ \forall j \\
+    \theta_j & := temp_j \ \forall j
+\end{align*}
+
+\section{Gradient Descent for Linear Regression}
+Cost function for linear regression is convex!
+
+\emph{Batch Gradient Descent}: Each step of gradient descent uses all training examples.
+
+% \blfootnote{Check \autoref{lecture2} for more details.}
+\blfootnote{Check \href{lecture_pdf/Lecture2.pdf}{Lecture2.pdf} for more details.}
