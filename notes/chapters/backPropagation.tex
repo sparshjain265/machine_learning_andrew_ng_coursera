@@ -1,0 +1,413 @@
+\chapter{Back Propagation}
+
+\section{Notations}
+\begin{align*}
+	L   & = \text{total no. of layers in the network}                \\
+	s_l & = \text{no. of units (not counting bias unit) in layer } l \\
+\end{align*}
+
+\subsection*{Binary Classification}
+\begin{equation*}
+	y = 0 \text{ or } 1
+\end{equation*}
+1 output unit
+\begin{align*}
+	h_\Theta(x) & \in \R                               \\
+	s_L         & = 1                                  \\
+	K           & = 1    & \text{(for simplification)} \\
+\end{align*}
+
+\subsection*{Multi-class Classification (K classes)}
+\begin{equation*}
+	y \in \R^K
+\end{equation*}
+\paragraph{Example:} $K = 4$
+\begin{equation*}
+	y \in \left\{
+	\begin{bmatrix}
+		1 \\
+		0 \\
+		0 \\
+		0 \\
+	\end{bmatrix}, \begin{bmatrix}
+		0 \\
+		1 \\
+		0 \\
+		0 \\
+	\end{bmatrix}, \begin{bmatrix}
+		0 \\
+		0 \\
+		1 \\
+		0 \\
+	\end{bmatrix}, \begin{bmatrix}
+		0 \\
+		0 \\
+		0 \\
+		1 \\
+	\end{bmatrix}
+	\right\}
+\end{equation*}
+$K$ output units
+\begin{align*}
+	h_\Theta(x) & \in \R^K \\
+	s_L         & = K      \\
+	K           & \ge 3    \\
+\end{align*}
+
+
+\section{Cost Function}
+\subsection*{Logistic Regression}
+\begin{equation*}
+	J(\theta) = -\left[
+		\frac{1}{m}\sum_{i=1}^m\left(
+		y^{(i)}\log h_\theta(x^{(i)}) +
+		(1 - y^{(i)})\log(1 - h_\theta(x^{(i)})
+		\right)
+		\right] + \frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+\subsection*{Neural Network}
+\begin{equation*}
+	h_\Theta(x) \in \R^K \ \ \ \ (h_\Theta(x))_i = i^{th} \text{output}
+\end{equation*}
+\begin{align*}
+	J(\Theta) & = -\frac{1}{m}\left[
+	\sum_{i=1}^m \sum_{k=1}^K \left(
+	y_k^{(i)}\log\left(
+	h_\Theta(x^{(i)})
+	\right)_k + \left(
+	1 - y_k^{(i)}
+	\right)\log\left(
+	1 - \left(
+		h_\Theta(x^{(i)})
+		\right)_k
+	\right)
+	\right)
+	\right]                          \\
+	          & + \frac{\lambda}{2m}
+	\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}\left(
+	\Theta_{ji}^{(l)}
+	\right)^2                        \\
+\end{align*}
+
+\section{Backpropagation Algorithm}
+\subsection{Gradient Computation}
+\begin{align*}
+	J(\Theta) & = -\frac{1}{m}\left[
+	\sum_{i=1}^m \sum_{k=1}^K \left(
+	y_k^{(i)}\log\left(
+	h_\Theta(x^{(i)})
+	\right)_k + \left(
+	1 - y_k^{(i)}
+	\right)\log\left(
+	1 - \left(
+		h_\Theta(x^{(i)})
+		\right)_k
+	\right)
+	\right)
+	\right]                          \\
+	          & + \frac{\lambda}{2m}
+	\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}\left(
+	\Theta_{ji}^{(l)}
+	\right)^2                        \\
+	\min_\Theta J(\Theta)            \\
+\end{align*}
+
+\paragraph{Need code to compute:}
+\begin{itemize}
+	\item $J(\Theta)$
+	\item $\frac{\partial}{\partial\Theta_{ij}^{(l)}}J(\Theta)$
+\end{itemize}
+
+\paragraph{Given one training example} $(x, y)$:
+
+Forward Propagation:
+\begin{align*}
+	a^{(1)}               & = x                                            \\
+	z^{(2)}               & = \Theta^{(1)}a^{(1)}                          \\
+	a^{(2)}               & = g(z^{(2)})          & (\text{add }a_0^{(2)}) \\
+	z^{(3)}               & = \Theta^{(2)}a^{(2)}                          \\
+	a^{(3)}               & = g(z^{(3)})          & (\text{add }a_0^{(3)}) \\
+	z^{(4)}               & = \Theta^{(3)}a^{(3)}                          \\
+	h_\Theta(x) = a^{(4)} & = g(z^{(4)})                                   \\
+\end{align*}
+
+\paragraph{Gradient Computation:} Back Propagation
+
+Intuition: $\delta_j^{(l)} = $ ``error'' of node $j$ in layer $l$
+
+For each output unit ($L = 4$)
+\begin{align*}
+	\delta_j^{(4)} & = a_j^{(4)} - y_j \\
+\end{align*}
+Vectorize:
+\begin{align*}
+	\delta^{(4)} & = a^{(4)} - y                               \\
+	\delta^{(3)} & = (\Theta^{(3)})^T\delta^{(4)}.*g'(z^{(3)}) \\
+	g'(z^{(3)})  & = a^{(3)} .* (1 - a^{(3)})                  \\
+	\delta^{(2)} & = (\Theta^{(2)})^T\delta^{(3)}.*g'(z^{(2)}) \\
+	g'(z^{(2)})  & = a^{(2)} .* (1 - a^{(2)})                  \\
+\end{align*}
+No $\delta^{(1)}$
+\begin{equation*}
+	\frac{\partial}{\partial\Theta_{ij}^{(l)}} J(\Theta) =
+	a_j^{(l)}\delta_i^{(l+1)}\ \ \ \ (\text{ignoring $\lambda$; if $\lambda = 0$})
+\end{equation*}
+
+\subsubsection*{Backpropagation Algorithm}
+\begin{itemize}[label={}]
+	\item Training set $\displaystyle \{(x^{(1)}, y^{(1)}), \dots, (x^{(m)}, y^{(m)})\}$
+	\item Set $\displaystyle \Delta_{ij}^{(l)} = 0$ (for all $l, i, j$)
+	      $\rightarrow \text{ accumulators to compute }
+		      \frac{\partial}{\partial\Theta_{ij}^{(l)}J(\Theta)}$
+	\item For $i = 1$ to $m$
+	      \begin{itemize}[label={}]
+		      \item Set $a^{(1)} = x^{(1)}$
+		      \item Perform forward propagation to compute $a^{(l)}$ for $l = 2, 3, \dots, L$
+		      \item Using $y^{(i)}$, compute $\delta^{(L)} = a^{(L)} - y^{(i)}$
+		      \item Compute $\delta^{(L-1)}, \delta^{(L-2)}, \dots, \delta^{(2)}$
+		      \item $\Delta_{ij}^{(l)} := \Delta_{ij}^{(l)} + a_j^{(l)}\delta_i^{(l+1)}$
+		      \item $\Delta^{(l)} := \Delta^{(l)} + \delta^{(l+1)}(a^{(l)})^T$ (Vectorized)
+	      \end{itemize}
+	\item $D_{ij}^{(l)} := \begin{cases}
+			      \frac{1}{m}\Delta_{ij}^{(l)} +
+			      \lambda \Theta_{ij}^{(l)}    & \text{ if } j \neq 0 \\
+			      \\
+			      \frac{1}{m}\Delta_{ij}^{(l)} & \text{ if } j = 0    \\
+		      \end{cases}$
+	\item $\frac{\partial}{\partial\Theta_{ij}^{(l)}}J(\Theta) = D_{ij}^{(l)}$
+\end{itemize}
+
+\section{Implementation Note}
+\subsection{Unrolling Parameters}
+Advanced optimization functions like `fminunc' assume that inputs `theta', `gradient', etc. are
+vectors. These are matrices in Neural Networks, so we \emph{unroll} them into vectors.
+
+\paragraph{Example:}
+Neural Network with 3 layers (1 input, 1 hidden, 1 output) and
+$s_1 = 10$, $s_2 = 10$, $s_3 = 1$.
+\begin{align*}
+	\Theta^{(1)} \in \R^{10 \times 11},\ \Theta^{(2)} \in \R^{10 \times 11},\
+	\Theta^{(3)} \in \R^{(1 \times 11)} \\
+	D^{(1)} \in \R^{10 \times 11},\ D^{(2)} \in \R^{10 \times 11},\
+	D^{(3)} \in \R^{(1 \times 11)}      \\
+\end{align*}
+
+\paragraph{To unroll:}
+\begin{minted}{octave}
+	thetaVec = [Theta1(:); Theta2(:); Theta3(:)];
+	DVec = [D1(:); D2(:); D3(:)];
+\end{minted}
+
+\paragraph{To go back to matrices:}
+\begin{minted}{octave}
+	Theta1 = reshape(thetaVec(1:110), 10, 11);
+	Theta2 = reshape(thetaVec(111:220), 10, 11);
+	Theta3 = reshape(thetaVec(221:231), 1, 11);
+\end{minted}
+
+\subsection{Learning Algorithm}
+\begin{itemize}[label={}]
+	\item Have initial parameters $\Theta^{(1)}, \Theta^{(2)}, \Theta^{(3)}$
+	\item Unroll to get \mintinline{octave}{initialTheta} to pass to
+	\item \mintinline{octave}{fminunc(@costFunction, initialTheta, options)}
+	\item \mintinline{octave}{function [jVal, gradientVec] = costFunction(thetaVec)}
+	      \begin{itemize}[label={}]
+		      \item From \mintinline{octave}{thetaVec},
+		            get $\Theta^{(1)}$, $\Theta^{(2)}$, $\Theta^{(3)}$
+		            using \mintinline{octave}{reshape}
+		      \item Use forward/back propagation to compute
+		            $D^{(1)}$, $D^{(2)}$, $D^{(3)}$ and $J(\Theta)$
+		      \item Unroll $D^{(1)}$, $D^{(2)}$, $D^{(3)}$ to get
+		            \mintinline{octave}{gradientVec}
+	      \end{itemize}
+\end{itemize}
+
+\section{Gradient Checking}
+An unfortunate problem is that it might seem like it's working even when there's a
+bug in the backpropagation algorithm (implementation). Subtle bugs can hence cause
+higher level of error and perform worse than a bug-free implementation. Here, we
+try to make sure that our implementation is 100\% correct.
+
+\subsection{Numerical Estimation of gradients}
+To estimate derivative of $J(\theta)$, we calculate $J(\theta + \epsilon)$
+and $J(\theta - \epsilon)$ and take the slope of the line connecting these two points.
+\begin{equation*}
+	J'(\theta) \approx \frac{J(\theta + \epsilon) - J(\theta - \epsilon)}{2\epsilon}
+\end{equation*}
+Use pretty small $\epsilon\ (\approx 10^{-4})$.
+
+The above formula is called the
+two sided difference. Another formula called the one sided difference is
+\begin{equation*}
+	J'(\theta) \approx \frac{J(\theta + \epsilon) - J(\theta)}{\epsilon}
+\end{equation*}
+But the two sided difference usually gives a slightly more accurate approximation.
+
+\paragraph{Implement:}
+\begin{minted}{octave}
+	gradApprox = (J(theta + EPSILON) - J(theta - EPSILON)) / (2*EPSILON)
+\end{minted}
+
+\subsubsection*{Parameter \emph{vector} $\theta$}
+\begin{align*}
+	\theta                                     & \in \R^n                     \\
+	\theta                                     & = \begin{bmatrix}
+		\theta_1 \\
+		\theta_2 \\
+		\vdots   \\
+		\theta_n \\
+	\end{bmatrix} \\
+	\frac{\partial}{\partial\theta_1}J(\theta) & \approx
+	\frac{J(\theta_1 + \epsilon, \theta_2, \theta_3, \dots, \theta_n) -
+		J(\theta_1 - \epsilon, \theta_2, \theta_3, \dots, \theta_n)}{2\epsilon}   \\
+	\frac{\partial}{\partial\theta_2}J(\theta) & \approx
+	\frac{J(\theta_1, \theta_2 + \epsilon, \theta_3, \dots, \theta_n) -
+		J(\theta_1, \theta_2 - \epsilon, \theta_3, \dots, \theta_n)}{2\epsilon}   \\
+	                                           & \vdots                       \\
+	\frac{\partial}{\partial\theta_n}J(\theta) & \approx
+	\frac{J(\theta_1, \theta_2, \theta_3, \dots, \theta_n + \epsilon) -
+		J(\theta_1, \theta_2, \theta_3, \dots, \theta_n - \epsilon)}{2\epsilon}   \\
+\end{align*}
+\paragraph{Implement:}
+\begin{minted}{octave}
+	for i = 1:n
+		thetaPlus = theta;
+		thetaPlus(i) = thetaPlus(i) + EPSILON;
+		thetaMinus = theta;
+		thetaMinus(i) = thetaMinus(i) - EPSILON;
+		gradApprox(i) = (J(thetaPlus) - J(thetaMinus))/(2*EPSILON);
+	end;
+\end{minted}
+
+Check that \mintinline{octave}{gradApprox} $\approx$ \mintinline{octave}{DVec} (from
+backpropagation).
+
+\subsection{Implementation Note:}
+\begin{itemize}
+	\item Implement backpropagation to compute \mintinline{octave}{Dvec} (unrolled
+	      $D^{(1)}$, $D^{(2)}$, $\dots$)
+	\item Implement numerical gradient check to compute \mintinline{octave}{gradApprox}
+	\item Make sure they give similar values
+	\item Turn off gradient checking (much slower) and use backpropagation for learning
+	      (much faster)
+\end{itemize}
+
+\paragraph{Important:}
+\begin{itemize}
+	\item Be sure to disable your gradient checking code before training your
+	      classifier. If you run numerical gradient computaion on every iteration of
+	      gradient descent (or in the inner loop of \mintinline{octave}{costFunction(...)})
+	      your code will be \uline{very} slow.
+\end{itemize}
+
+\section{Random Initialization}
+\subsection*{Initial value of $\Theta$}
+For gradient descent and advanced optimization methods, we need initial value of
+$\Theta$.
+
+Consider gradient descent:\\
+Set \mintinline{octave}{initialTheta = zeroes(n, 1)} ?
+
+Works fine for linear/logistic regression, but not when we're training a
+neural network. Why?
+\begin{align*}
+	\Theta_{ij}^{(l)}                    & = 0 \text{ for all } i, j, l \\
+	a_1^{(2)}                            & = a_2^{(2)}                  \\
+	\delta_1^{(2)}                       & = \delta_2^{(2)}             \\
+	\frac{\partial}
+	{\partial\Theta_{01}^{(1)}}J(\Theta) & = \frac{\partial}
+	{\partial\Theta_{02}^{(1)}}J(\Theta)                                \\
+\end{align*}
+Meaning, after each gradient descent update, parameters corresponding to inputs
+going into each unit of the next layer are identical. Thus, all the units of the next
+layer are still computing the same function of the input. The values may change, but
+will always be the same, preventing the neural network from learning something interesting
+since it is extremely redundant.
+
+\subsubsection{Random Initialization: Symmetry Breaking}
+To get around this (\emph{symmetric weights}), we do random initialization.
+Initialize each $\Theta_{ij}^{(l)}$ to a random value in $[-\epsilon, \epsilon]$
+(i.e. $-epsilon \leq \Theta_{ij}^{(l)} \leq \epsilon$).
+
+\paragraph{Example:}
+\begin{minted}{octave}
+	Theta1 = rand(10,11)*(2*INIT_EPSILON) - INIT_EPSILON
+	Theta2 = rand(1, 11)*(2*INIT_EPSILON) - INIT_EPSILON
+\end{minted}
+
+\section{Putting it all together}
+% \subsection{Training a neural network}
+Pick a network architecture (connectivity pattern between neurons), like number of
+layers, number of units in each layer, etc. For example, $[3 \rightarrow 5 \rightarrow 4]$
+vs $[3 \rightarrow 5 \rightarrow 5 \rightarrow 4]$ vs $[3 \rightarrow 5 \rightarrow 5
+			\rightarrow 5 \rightarrow 4]$.
+\begin{align*}
+	\text{No. of input units}  & : \text{Dimension of features } x^{(i)} \\
+	\text{No. of output units} & : \text{Number of classes}              \\
+\end{align*}
+\paragraph{Remember:}
+\begin{align*}
+	y & \in \{1, 2, \dots, 10\}	\text{ becomes } \\
+	y & \in \left\{
+	\begin{bmatrix}
+		1      \\
+		0      \\
+		\vdots \\
+		0      \\
+	\end{bmatrix},
+	\begin{bmatrix}
+		0      \\
+		1      \\
+		\vdots \\
+		0      \\
+	\end{bmatrix}, \dots,
+	\begin{bmatrix}
+		0      \\
+		0      \\
+		\vdots \\
+		1      \\
+	\end{bmatrix}
+	\right\}
+\end{align*}
+
+\subsubsection{For Hidden Layers?}
+\paragraph{Reasonable Default:} $1$ hidden layer, or if $>1$ hidden layer, have same
+no. of hidden units in every layer (usually, the more the better, just that it may
+get computationally expensive). Usually, comparable to the number of features.
+
+\subsubsection{Training a neural network:}
+\begin{enumerate}
+	\item Randomly initialize weights
+	\item Implement forward propagation to get $h_\Theta(x)$ for any $x$
+	\item Implement code to compute cost function $J(\Theta)$
+	\item Implement backpropagation to compute partial derivatives
+	      $\frac{\partial}{\partial\Theta_{ij}^{(l)}J(\Theta)}$
+	      \begin{minted}[escapeinside=||, mathescape=true]{octave}
+	for i = 1:m
+		Perform forward propagation ... 
+			and backpropagation ... 
+			using example |$(x^{(i)}, y^{(i)})$|
+				
+		Get activations |$a^{(l)}$| ... 
+			and delta terms |$\delta^{(l)}$| ... 
+			for |$l = 2, \dots, L$|
+
+		|$\Delta^{(l)} := \Delta^{(l)} + \delta^{(l+1)}(a^{(l)})^T$|
+		|$\vdots$|
+	end
+	|$\vdots$|
+	compute |$\frac{\partial}{\partial\Theta_{jk}^{(l)}}J(\Theta)$|
+\end{minted}
+	\item \begin{enumerate}
+		      \item Use gradient checking to compare $J'(\Theta)$ computed using
+		            backpropagation vs using numerical estimate.
+		      \item Then disable gradient checking code.
+	      \end{enumerate}
+	\item Use gradient descent or advanced optimization method with backpropagation
+	      to try to minimize $J(\Theta)$
+\end{enumerate}
+
+$J(\Theta)$ in general for a neural network is non-convex, and hence susceptible to
+local optima. However, it turns out, in practice, this is not usually a huge problem.
+
+\blfootnote{Check \href{lecture_pdf/Lecture9.pdf}{Lecture9.pdf} for more details.}

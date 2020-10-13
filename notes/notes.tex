@@ -2,6 +2,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage{enumerate}
+\usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{caption}
 \usepackage[normalem]{ulem}
@@ -24,6 +25,9 @@
 \hyphenpenalty=10000
 \hbadness=10000
 %%%
+
+%%% make inline math look like display style math
+\everymath{\displaystyle}
 
 %%% minimize
 \DeclareMathOperator*{\minimize}{minimize}
@@ -77,6 +81,8 @@
 \include{chapters/regularization}
 
 \include{chapters/neuralNetworks}
+
+\include{chapters/backPropagation}
 
 %%% chapter endnote
 % \blfootnote{Check \href{lecture_pdf/Lecture1.pdf}{Lecture1.pdf} for more details.}
