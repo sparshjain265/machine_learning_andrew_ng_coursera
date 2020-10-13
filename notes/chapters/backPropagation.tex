@@ -335,6 +335,13 @@ Initialize each $\Theta_{ij}^{(l)}$ to a random value in $[-\epsilon, \epsilon]$
 	Theta2 = rand(1, 11)*(2*INIT_EPSILON) - INIT_EPSILON
 \end{minted}
 
+A good choice of $\epsilon$ is:
+\begin{equation*}
+	\epsilon = \frac{\sqrt{6}}{\sqrt{L_{in} + L_{out}}}
+\end{equation*}
+Where $L_{in}$ and $L_{out}$ are number of units in the layers
+adjacent to $\Theta^{(l)}$.
+
 \section{Putting it all together}
 % \subsection{Training a neural network}
 Pick a network architecture (connectivity pattern between neurons), like number of
