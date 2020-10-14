@@ -1,0 +1,207 @@
+\chapter{Applying Machine Learning}
+\section{Deciding what to try next}
+\subsection{Debugging a Learning Algorithm}
+Suppose you have implemented regularized linear regression to predict housing prices.
+\begin{equation*}
+	J(\theta)  = \frac{1}{2m}\left[
+		\sum_{i=1}^m\left(
+		h_\theta(x^{(i)}) - y^{(i)}
+		\right)^2 + \lambda\sum_{j=1}^n\theta_j^2
+		\right]
+\end{equation*}
+However, it makes \emph{unacceptably} large errors in prediction. What to try next?
+\begin{itemize}
+	\item Get more training examples (Sometimes doesn't actually help)
+	\item Try smaller set of features (Overfitting?)
+	\item Try additional features (Underfitting?) (Huge project)
+	\item Try adding polynomial features
+	\item Increasing/Decreasing $\lambda$
+\end{itemize}
+Need to understand what would help.
+
+\subsection{Machine Learning Diagnostics}
+\paragraph{Diagnostic:} A test that you can run to gain insight at what is/isn't working
+with the algorithm, and gain guidance as to how best to improve its performance.
+
+Diagnostics can take time to implement, but doing so can be a very good use of your
+time as it can save huge time later.
+
+\section{Evaluating your Hypothesis}
+Just \emph{training error} not a good indicator (Overfitting).
+
+Solution? Plot Hypothesis function? Not feasible with high number of features.
+
+\subsection{The Standard Way}
+Split the dataset into two portions - \emph{Training Set} and \emph{Test Set} with
+about $70\%$-$30\%$ ratio (\emph{randomly} if it is in some order).
+
+\paragraph{Notation:}
+\begin{align*}
+	\text{Training Examples}        & : (x, y)               \\
+	\text{Test Examples}            & : (x_{test}, y_{test}) \\
+	\text{No. of Training Examples} & : m                    \\
+	\text{No. of Test Examples}     & : m_{test}             \\
+\end{align*}
+
+\subsection{Train/Test Procedure}
+\begin{enumerate}
+	\item Learn $\theta$ from training data (minimize $J(\theta)$)
+	\item Compute test set error ($J_{test}(\theta)$) on test examples
+	      \begin{itemize}
+		      \item In case of classification problem, we can also use misclassification
+		            error (Also called $0/1$ misclassification error)
+		      \item $\text{err}(h_\theta(x), y) = \begin{cases}
+				            1 & \text{ if } h_\theta(x) \ge 0.5,\ y == 0   \\
+				              & \text{ or if } h_\theta(x) < 0.5, \ y == 1 \\
+				            0 & \text{ otherwise }                         \\
+			            \end{cases}$
+		      \item $\text{test error} = \frac{1}{m_{test}}
+			            \sum_{i=1}^{m_{test}}\text{err}
+			            (h_\theta(x_{test}^{(i)}), y_{test}^{(i)})$
+		      \item This gives us the proportion of the test data that was misclassified
+	      \end{itemize}
+\end{enumerate}
+
+\section{Model Selection}
+Once parameters $\theta$ were fit to some training set, the error $J(\theta)$ measured
+on that data is likely to be lower than the actual generalization error.
+
+\paragraph{Model Selection:} Let's say we try to choose what degree polynomial
+to fit to data (linear, quadradic, cubic, \dots)
+
+\paragraph{Notation:}
+\begin{align*}
+	d & = \text{Degree of polynomial} \\
+\end{align*}
+
+For different $d$, we can have the following:
+\begin{enumerate}
+	\item $h_\theta(x) = \theta_0 + \theta_1x$
+	\item $h_\theta(x) = \theta_0 + \theta_1x + \theta_2x^2$
+	\item $h_\theta(x) = \theta_0 + \theta_1x + \dots + \theta_3x^3$\\
+	      \vdots
+	\item[10.] $h_\theta(x) = \theta_0 + \theta_1x + \dots + \theta_{10}x^{10}$
+\end{enumerate}
+
+Choose one model out of the above. We can train them separately, and get different
+$\theta^{(k)}$, and calculate $J_{test}(\theta)$ for each of them, and choose
+the one with the least test error.
+
+How well does this model generalize? Report $J_{test}(\theta)$.
+
+\paragraph{Problem:} $J_{test}(\theta)$ is likely an optimistic estimate of
+generalization error (our extra parameter $d$ is fit to \emph{test set}).
+
+\subsection{Evaluating your hypothesis}
+Divide the data set in three pieces, \emph{training set} ($60\%$), \emph{cross-validation
+	set} ($20\%$), \emph{test set} ($20\%$).
+
+\paragraph{Notations:}
+\begin{align*}
+	\text{Training Examples}                & : (x, y)                                  \\
+	\text{Cross-Validation Examples}        & : (x_{cv}, y_{cv})                        \\
+	\text{Test Examples}                    & : (x_{test}, y_{test})                    \\
+	\text{No. of Training Examples}         & : m                                       \\
+	\text{No. of Cross-Validation Examples} & : m_{cv}                                  \\
+	\text{No. of Test Examples}             & : m_{test}                                \\
+	\text{Training Error}                   & : J(\theta) \text{ or } J_{train}(\theta) \\
+	\text{Cross Validation Error}           & : J_{cv}(\theta)                          \\
+	\text{Test Error}                       & : J_{test}(\theta)                        \\
+\end{align*}
+
+Use \emph{Cross-Validation Set} to select the model. Estimate generalization
+error for test set.
+
+\section{Bias vs Variance}
+Plot \emph{error} against \emph{degree} of the polynomial for both, \emph{training}
+and \emph{validation} data set. Usually, training error tends to decrease. Cross-Validation
+error (or test error) on the other hand, tends to decrease, and then increase again.
+
+To recognise bias/variance problem:
+\begin{align*}
+	\text{Bias (Underfit)}    & : & J_{train} \text{ will be high} \\
+	                          &   & J_{cv} \approx J_{train}       \\
+	\text{Variance (Overfit)} & : & J_{train} \text{ will be low}  \\
+	                          &   & J_{cv} >> J_{train}            \\
+\end{align*}
+
+\subsection{Effect of regularization}
+Large $\lambda$ can cause high bias (underfit), and at very small $\lambda$ causes
+high variance (overfit). How to automatically choose a good value of $\lambda$.
+
+\paragraph{Choosing $\lambda$:}
+\begin{align*}
+	J(\theta)         & = \frac{1}{2m}\sum_{i=1}^m(h_\theta(x^{(i)}) - y^{(i)}) +
+	\frac{\lambda}{2m}\sum_{j=1}^m\theta_j^2                                      \\
+	J_{train}(\theta) & = \frac{1}{2m}\sum_{i=1}^m(h_\theta(x^{(i)}) - y^{(i)})   \\
+	J_{cv}(\theta)    & = \frac{1}{2m_{cv}}
+	\sum_{i=1}^{m_{cv}}(h_\theta(x_{cv}^{(i)}) - y_{cv}^{(i)})                    \\
+	J_{test}(\theta)  & = \frac{1}{2m_{test}}
+	\sum_{i=1}^{m_{test}}(h_\theta(x_{test}^{(i)}) - y_{test}^{(i)})              \\
+\end{align*}
+
+Have a model ($h_\theta(x)$, $J(\theta)$), have a bunch of values to try for $\lambda$ like $0$,
+$0.01$, $0.02$, $0.04$, $0.08$, \dots, $10$ (roughly doubling). Train (minimize $J(\theta)$)
+for all values. Use $J_{cv}(\theta)$ to choose a $\lambda$. Report generalization error as
+$J_{test}(\theta)$.
+
+\subsubsection{Bias/Variance as a function of $\lambda$}
+Plot $J_{train}(\theta)$ and $J_{cv}(\theta)$ as a function of $\lambda$. Usually,
+$J_{train}(\theta)$ tends to increase while $J_{cv}(\theta)$ tends to decrease at
+first but increase again later.
+
+\section{Learning Curves}
+Useful thing to plot, to sanity check, to improve the performance, to diagnose for
+bias/variance, \dots.
+
+Plot $J_{train}(\theta)$, and $J_{cv}(\theta)$ as a function of $m$, the number of
+training examples. Measure $J_{train}(\theta)$ only on data used to train!. Measure
+$J_{cv}(\theta)$ on all cross validation data!
+
+Usually, average training error will increase with $m$.
+Usually, average validation error will decrease with $m$.
+
+\subsection{High Bias}
+\paragraph{Usually:}
+Validation error will decrease at first but then will saturate/flatten out soon.
+Training error will increase at first but then will saturate/flatten out soon, close to
+validation error.
+
+\paragraph{Note:} If a learning algorithm is suffering from high bias, getting more training
+data will not (by itself) help much.
+
+\subsection{High Variance}
+\paragraph{Usually:}
+Training error will increase but still be pretty low.
+Validation error will decrease but still be pretty high, far from training error.
+
+\paragraph{Note:} If a learning algorithm is suffering from high variance, getting more
+training examples is indeed likely to help.
+
+\section{Deciding what to try next (Revisited)}
+\begin{tabular}{| l | l |}
+	\hline
+	Get more training examples      & fixes high variance          \\
+	\hline
+	Try smaller set of features     & fixes high variance          \\
+	\hline
+	Try additional features         & fixes high bias (not always) \\
+	\hline
+	Try adding polynomial features  & fixes high bias (not always) \\
+	\hline
+	Increasing/Decreasing $\lambda$ & fixes bias/variance          \\
+	\hline
+\end{tabular}
+
+\subsection{Neural Networks}
+\emph{Small} neural network, computationally cheaper, but possibly underfitting.
+\emph{Large} neural networks, computationally more expensive, and possibly overfitting.
+Use regularization to address overfitting.
+
+Often, large neural network with regularization works better (but may be computationally
+expensive).
+
+Large network can comprise of a single large hidden layer, or two moderate hidden layers, or
+three average hidden layers, etc.
+
+\blfootnote{Check \href{lecture_pdf/Lecture10.pdf}{Lecture10.pdf} for more details.}
