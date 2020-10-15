@@ -1,0 +1,168 @@
+\chapter{Machine Learning System Design}
+\section{Prioritizing what to work on: Spam Classification Example}
+Supervised Learning! $x =$ features of email. $y =$ spam($1$) or not spam($0$).\\
+Features $x$: Choose $100$ words indicative of spam/not spam.\\
+Example: deal, buy, discount, andrew, now, \dots
+
+Feature vector:
+\begin{align*}
+	x & = \begin{bmatrix}
+		0      \\
+		1      \\
+		1      \\
+		0      \\
+		\vdots \\
+		1      \\
+	\end{bmatrix}\
+	\begin{bmatrix}
+		andrew   \\
+		buy      \\
+		deal     \\
+		discount \\
+		\vdots   \\
+		now      \\
+	\end{bmatrix}        \\
+\end{align*}
+$0/1$ depending on whether a 'word' appears or not in the email.
+\begin{align*}
+	x_j = \begin{cases}
+		1 & \text{ if word $j$ appearsin email} \\
+		0 & \text{ otherwise}                   \\
+	\end{cases} \\
+\end{align*}
+
+\paragraph{Note:} In practice, take most frequently occurring $n (10,000 \text{ to } 50,000)$
+words in training set, instead of manually picking $100$ words.
+
+\subsection{Time Management?}
+\begin{itemize}
+	\item Collect lots of data \begin{itemize}
+		      \item E.g. \emph{honeypot} project.
+	      \end{itemize}
+	\item Develop sophisticated features based on email routing information (from email header).
+	\item Develop sophisticated features for message body, e.g. should \emph{discount} and
+	      \emph{discounts} be treated as same word? How about \emph{deal} and \emph{Dealer}?
+	      Features about punctuation?
+	\item Develop sophisticated algorithm to detect misspellings (e.g. m0rtgage, med1cine,
+	      w4tches.)
+\end{itemize}
+
+\section{Error Analysis}
+\subsection{Recommended approach}
+\begin{itemize}
+	\item Start with a simple and quick algorithm, implement and test it on cross-validation
+	      data.
+	\item Plot learning curves to decide if more data, more features, etc.
+	\item Error Analysis: Manually examine the examples (in cross validation set) that
+	      your algorithm made errors on. See if you spot any systematic trend in what type
+	      of examples it is making errors on.
+\end{itemize}
+
+$m_{cv} = 500$ examples in cross validation set, algorithm misclassifies 100 emails.
+Manually examine 100 errors, and categorized them based on:
+\begin{enumerate}
+	\item What type of email it is (pharma, replica, phishing, \dots)
+	\item What features would have helped (Deliberate misspellings,
+	      Unusual email routing, Unusual punctuation)
+\end{enumerate}
+
+\subsection{Numerical Evaluation}
+Have a way of \emph{numerical evaluation} like accuracy/error, to tell how the learning
+algorithm is doing.
+
+\paragraph{Example:} Should discount/discounts/discounting be treated as the same word?
+Can use \emph{stemming} software (E.g. "Porter Stemmer"). It can hurt because the software
+can mistake universe/university to be the same.
+
+So, error analysis may not be helpful for deciding if this is likely to improve performance.
+Only solution is to try and see if it works.
+
+Need numerical evaluation (e.g. cross validation error) of algorithm's performance
+with and without stemming.
+
+\section{Skewed Classes}
+\paragraph{Cancer classification example:} Train logistic regression model $h_\theta(x)$
+with $1\%$ error on test set. Good? What if only $0.50\%$ patients in training/test set
+have cancer? Not so impressive anymore! Even predicting \emph{No Cancer} all the time
+will get $0.50\%$ error. This is a case of \emph{skewed} classes.
+
+Going from $99.2\%$ to $99.5\%$ accuracy is actually doing something useful? Can't say
+in case of skewed classes.
+
+\subsection{Precision/Recall}
+$y = 1$ in presence of rare class that we want to detect.
+
+\subsubsection{Notations}
+\begin{tabular}{|c|c|c|}
+	\hline
+	Notations      & Actual Class & Predicted Class \\
+	\hline
+	True Positive  & 1            & 1               \\
+	\hline
+	True Negative  & 0            & 0               \\
+	\hline
+	False Positive & 0            & 1               \\
+	\hline
+	False Negative & 1            & 0               \\
+	\hline
+\end{tabular}
+
+\subsubsection{Precision}
+Out of all the predicted \emph{positives}, what fraction is \emph{actually} positive.
+\begin{equation*}
+	\text{Precision} = \frac{\text{True Positives}}
+	{\text{True Positives} + \text{False Positives}}
+\end{equation*}
+
+\subsubsection{Recall}
+Out of all the actual \emph{positives}, what fraction is \emph{predicted} positive.
+\begin{equation*}
+	\text{Precision} = \frac{\text{True Positives}}
+	{\text{True Positives} + \text{False Negatives}}
+\end{equation*}
+
+Now, if we predict no cancer always, then recall $= 0$. These metrics usually help us
+evaluate our algorithm even in case of really skewed classes.
+
+\subsection{Trade-Off}
+Consider same example of cancer, we train logistic regression $h_\theta(x)$ which gives
+the probability of having cancer.
+
+Suppose we want to predict cancer ($y = 1$) only
+if we're very sure. One way to do this, is predict $y = 1$ when $h_\theta(x) \ge 0.7$
+instead of $0.5$ and $y = 0$ otherwise. This will give us \emph{higher} precision,
+but \emph{lower} recall.
+
+Suppose we want to avoid missing too many cases of cancer, we can predict
+$y = 1$ when $h_\theta(x) \ge 0.3$. This will give us \emph{higher} recall,
+but \emph{lower} precision.
+
+How to choose the threshold?
+
+\subsubsection{$F_1$ Score (F Score)}
+We have lost our 'single number' evaluation metric, we now have precision and recall.
+What are our options?
+\begin{itemize}
+	\item Average of precision and recall ($\frac{P + R}{2}$)?
+	      Not a good idea! (Extremes)
+	\item $F_1$ Score $= 2\frac{PR}{P+R}$ better choice, commonly used
+\end{itemize}
+
+Use $F_1$ score on cross-validation set to decide the threshold.
+
+\subsection{Working with Large Data}
+Consider cases where more data will be helpful.
+
+Say, feature $x \in \R^{n+1}$
+has sufficient information to predict $y$ accurately. (Counter-examples: predict
+housing price from only size or area).
+
+A useful test is, given $x$, can a human
+expert confidently predict $y$?
+
+Alongside, Suppose we use a learning algorithm with a large number of parameters
+(low bias algorithms).
+
+Using a very large training set, it is unlikely to overfit.
+
+\blfootnote{Check \href{lecture_pdf/Lecture11.pdf}{Lecture11.pdf} for more details.}
