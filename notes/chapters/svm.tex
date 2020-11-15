@@ -1,0 +1,291 @@
+\chapter{Support Vector Machines}
+Another popular supervised learning algorithm.
+
+\section{Optimization Objective}
+\subsection{Alternative view of logistic regression}
+\begin{align*}
+	h_\theta(x) & = \frac{1}{1 + e^{-\theta^Tx}} \\
+\end{align*}
+If $y = 1$, we want $h_\theta(x) \approx 1$, $\theta^Tx \gg 0$\\
+If $y = 0$, we want $h_\theta(x) \approx 0$, $\theta^Tx \ll 0$\\
+
+\subsubsection{Cost of example:}
+Each example $(x, y)$ contributes:
+\begin{align*}
+	  & -(y\log(h_\theta(x)) + (1-y)\log(1-h_\theta(x)))  \\
+	= & -y\log\left(\frac{1}{1 + e^{\theta^Tx}}\right) -
+	(1-y)\log\left(1 - \frac{1}{1 + e^{\theta^Tx}}\right) \\
+\end{align*}
+
+If $y = 1$ (want $\theta^Tx \gg 0$): we get $-log\left(\frac{1}{1 + e^{-z}}\right)$
+where $z = \theta^Tx$.
+For \emph{SVM} modify cost function to be flat $0$ for $x > 1$ and a straight
+line to the left (with negative slope). Denote by ${cost}_1(z)$.
+
+If $y = 0$ (want $\theta^Tx \ll 0$): we get $-log\left(1 - \frac{1}{1 + e^{-z}}\right)$
+where $z = \theta^Tx$.
+For \emph{SVM} modify cost function to be flat $0$ for $x < -1$ and a straight
+line to the left (with positive slope). Denote by ${cost}_0(z)$.
+
+\subsubsection{Logistic Regression:}
+\begin{equation*}
+	\min_\theta \frac{1}{m}\left[
+		\sum_{i=1}^m \left(
+		y^{(i)}\left(
+		-\log\left(h_\theta(x^{(i)})\right)
+		\right) + (1 - y^{(i)})\left(
+		-log\left(1 - h_\theta(x^{(i)})\right)
+		\right)
+		\right)
+		\right] + \frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+
+\subsubsection{Support Vector Machine:}
+Modify costs first
+\begin{equation*}
+	\min_\theta \frac{1}{m}\left[
+	\sum_{i=1}^m \left(
+	y^{(i)}{cost}_1(\theta^Tx^{(i)}) +
+	(1 - y^{(i)}){cost}_0(\theta^Tx^{(i)})
+	\right)
+	\right] + \frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+Get rid of $\frac{1}{m}$ term. Only a constant, same optimal value!
+\begin{equation*}
+	\min_\theta \left[
+	\sum_{i=1}^m \left(
+	y^{(i)}{cost}_1(\theta^Tx^{(i)}) +
+	(1 - y^{(i)}){cost}_0(\theta^Tx^{(i)})
+	\right)
+	\right] + \frac{\lambda}{2}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+By convention, instead of optimizing $A + \lambda B$, optimize $CA + B$ where
+$C$ is somewhat equivalent of $\frac{1}{\lambda}$, again, same optimal value!
+\begin{equation*}
+	\min_\theta C\left[
+	\sum_{i=1}^m \left(
+	y^{(i)}{cost}_1(\theta^Tx^{(i)}) +
+	(1 - y^{(i)}){cost}_0(\theta^Tx^{(i)})
+	\right)
+	\right] + \frac{1}{2}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+
+\subsection{SVM Hypothesis}
+\begin{equation*}
+	\min_\theta C\left[
+	\sum_{i=1}^m \left(
+	y^{(i)}{cost}_1(\theta^Tx^{(i)}) +
+	(1 - y^{(i)}){cost}_0(\theta^Tx^{(i)})
+	\right)
+	\right] + \frac{1}{2}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+
+\subsubsection{Hypothesis:}
+Unlike logistic regression, SVM does not give probability. It just makes prediction.
+\begin{equation*}
+	h_\theta(x) = \begin{cases}
+		1 & \text{if } \theta^Tx \ge 0 \\
+		0 & \text{otherwise}
+	\end{cases}
+\end{equation*}
+
+\section{Large Margin}
+\subsection{Intuition}
+If $y = 1$, we want $\theta^Tx \ge 1$ (not just $\ge 0$)\\
+If $y = 0$, we want $\theta^Tx \le -1$ (not just $< 0$)\\
+This builds safety margin factor in between.
+
+\subsubsection{SVM Decision Boundary}
+If $C \gg 1$, say $100,000$, we will get \\
+$\min \left(C \times 0 +
+	\frac{1}{2}\sum_{j=1}^n\theta_j^2\right)$ such that $\begin{cases}
+		\theta^Tx^{(i)} \ge 1  & \text{if } y^{(i)} = 1 \\
+		\theta^Tx^{(i)} \le -1 & \text{if } y^{(i)} = 0 \\
+	\end{cases}$
+Very interesting decision boundary!
+
+\paragraph{Linearly Separable Case:} It will choose the decision boundary
+such that it maximises margin of the SVM.
+
+\paragraph{Outliers:} If $C$ is indeed very large it will be affected by outliers easily
+but if $C$ is not too large, it will still give a reasonable boundary.
+
+\subsection{Math}
+\subsubsection{Vector Inner Product}
+$u^Tv$ (or dot product)
+\begin{align*}
+	u        & = \begin{bmatrix}
+		u_1 \\
+		u_2 \\
+	\end{bmatrix}                          \\
+	v        & = \begin{bmatrix}
+		v_1 \\
+		v_2 \\
+	\end{bmatrix}                          \\
+	\norm{u} & = \text{length of vector } u                          \\
+	         & = \sqrt{u_1^2 + u_2^2} \in \R                         \\
+	p        & = \text{projection of vector } v \text{ on vector } u \\
+	u^Tv     & = p\norm{u}                                           \\
+	u^Tv     & = u_1v_1 + u_2v_2                                     \\
+	u^Tv     & = v^Tu                                                \\
+\end{align*}
+\subsubsection{SVM Decision Boundary}
+$\min_\theta \frac{1}{2}\sum_{j=1}^n\theta^2_j$ s.t. $\begin{cases}
+		\theta^Tx^{(i)} \ge 1  & \text{if } y^{(i)} = 1 \\
+		\theta^Tx^{(i)} \le -1 & \text{if } y^{(i)} = 0 \\
+	\end{cases}$
+
+\paragraph{Simplifications:} Only for the purpose of understanding here!
+\begin{align*}
+	\theta_0 = 0 \\
+	n = 2        \\
+\end{align*}
+
+This gives, $\min_\theta \half(\theta_1^2 + \theta_2^2)
+	= \min_\theta\half\left(\sqrt{\theta_1^2 + \theta_2^2}\right)^2
+	= \min_\theta\half\norm{\theta}^2$
+
+$\theta^Tx^{(i)} = ?$
+\begin{align*}
+	p^{(i)}         & = \text{projection of vector } x^{(i)} \text{ on vector } \theta \\
+	\theta^Tx^{(i)} & = p^{(i)}\norm{\theta}                                           \\
+	                & = \theta_1x_1^{(i)} + \theta_2x_2^{(i)}                          \\
+\end{align*}
+
+\paragraph{Optimization Objective:} Modified as follows:\\
+$\min_\theta \frac{1}{2}\sum_{j=1}^n\theta^2_j = \half\norm{\theta}^2$ s.t. $\begin{cases}
+		p^{(i)}\norm{\theta} \ge 1  & \text{if } y^{(i)} = 1 \\
+		p^{(i)}\norm{\theta} \le -1 & \text{if } y^{(i)} = 0 \\
+	\end{cases}$\\
+where $p^{(i)}$ is the projection of $x^{(i)}$ on vector $\theta$. $p^{(i)}$ will be
+bigger with large margin helping minimize the $\half\norm{\theta}^2$.
+
+\section{Kernels}
+\subsection{Non-linear Decision Boundary}
+Predict $y = 1$ if $\theta_0 + \theta_1x_1 + \theta_2x_2 + \dots \ge 0$.
+
+\paragraph{New Notation:} $h\theta = \theta_0 + \theta_1f_1 + \theta_2f_2 + \dots$
+where possibly, $f_1 = x_1$, $f_2 = x_2$, $f_3 = x_1x_2$, $f_4 = x_1^2$, \dots.
+
+Is there a better/different choice of features $f_1$, $f_2$, $f_3$, \dots?
+
+Given $x$, choose $3$ random landmarks $l$s and define new features as:
+\begin{align*}
+	f_1 & = {similarity}(x, l^{(1)})
+	    & = \exp\left(\frac{-\norm{x-l^{(1)}}^2}{2\sigma^2}\right) \\
+	f_2 & = {similarity}(x, l^{(2)})
+	    & = \exp\left(\frac{-\norm{x-l^{(2)}}^2}{2\sigma^2}\right) \\
+	f_3 & = {similarity}(x, l^{(3)})
+	    & = \exp\left(\frac{-\norm{x-l^{(3)}}^2}{2\sigma^2}\right) \\
+\end{align*}
+Similarity function is \emph{Kernel} functions. This particular one is \emph{Gaussian} Kernel.
+
+\subsubsection{Kernels and Similarity}
+If $x \approx l^{(1)}$: $f_1 \approx 1$\\
+If $x$ is far from $l^{(1)}$: $f_1 \approx 0$\\
+Measures closeness to landmarks.\\
+Setting $\sigma^2$ low, the value of $f_1$ falls to $0$ very rapidly, and vice-versa.
+
+Predict $1$ when $\theta_0 + \theta_1f_1 + \theta_2f_2 + \theta_3f_3 \ge 0$
+Say $\theta_0 = -0.5$, $\theta_1 = 1$, $\theta_2 = 1$, $\theta_3 = 0$, then
+points close to $l^{(1)}$ or $l^{(2)}$ will give $1$ creating complex non-linear boundary.
+
+\subsection{Choosing the Landmarks}
+Where to get landmarks? How many?
+
+One choice would be one landmark per location of each feature.
+Given $m$ examples, we have $m$ landmarks.
+
+Given an example $x$, compute $f_1$, $f_2$, \dots
+using kernels and get the feature vector $f$ (include $f_0 = 1$). For training examples, at
+least one feature would be $1$.
+
+\paragraph{Hypothesis:} Given $x$, compute $f \in \R^{m+1}$\\
+Predict `y=1' if $\theta^Tf \ge 0$\\
+Predict `y=0' otherwise\\
+
+\paragraph{Training:}
+\begin{equation*}
+	\min_\theta C\left[
+	\sum_{i=1}^m \left(
+	y^{(i)}{cost}_1(\theta^Tf^{(i)}) +
+	(1 - y^{(i)}){cost}_0(\theta^Tf^{(i)})
+	\right)
+	\right] + \frac{1}{2}\sum_{j=1}^n\theta_j^2
+\end{equation*}
+$n = m$
+
+Slight modification in last term!
+Instead of using $\theta^T\theta$, use $\theta^TM\theta$ where $M$ is a matrix depending
+on the kernel done for computational expense.
+
+Can use Kernels in other algorithms but tricks (such as $M$) don't go well with other algorithms
+so it can be slow/expensive.
+
+\subsection{SVM Parameters:}
+$C \left(=\frac{1}{\lambda}\right)$
+\begin{align*}
+	\text{Large } C & : \text{Lower Bias, High Variance} \\
+	\text{Small } C & : \text{Higher Bias, Low Variance} \\
+\end{align*}
+
+$\sigma^2$
+\begin{align*}
+	\text{Large } \sigma^2 & : \text{Features $f_i$ vary more smoothly} \\
+	                       & : \text{Higher bias, Low Variance}         \\
+	\text{Small } \sigma^2 & : \text{Features $f_i$ vary less smoothly} \\
+	                       & : \text{Lower Bias, High Variance}         \\
+\end{align*}
+
+\section{Using SVM}
+Use SVM software package (e.g. liblinear, libsvm, \dots) to solve for parameters $\theta$.
+
+\subsubsection{Need to specify:}
+\begin{itemize}
+	\item Choice of parameter $C$
+	\item Choice of kernel (similarity function):\begin{itemize}
+		      \item Linear Kernel is just another name of no kernel.
+		      \item Gaussian Kernel. Need to choose $\sigma^2$.
+		            \begin{minted}[escapeinside=||, mathescape=true]{octave}
+	function f = kernel(x1, x2)
+		f = |$\exp\left(-\frac{\norm{x1-x2}^2}{2\sigma^2}\right)$|
+	return
+					  \end{minted}
+		            \textbf{Note:} Do perform feature scaling before using
+		            the Gaussian Kernel.
+		      \item Other choices of kernel \\
+		            \textbf{Note: }Not all similarity functions make valid kernels. (Need to
+		            satisfy a technical condition called \emph{Mercer's Theorem} to
+		            make sure SVM packages' optimizations run correctly, and do not
+		            diverge)\\
+		            Many off-the-shelf kernels available:\begin{itemize}
+			            \item Polynomial Kernel: $k(x,l) = (x^Tl + \text{constant})^{degree}$
+			                  (almost always performs worse than Gaussian Kernel, and not used
+			                  that much and used only where $x$ and $l$ are all strictly
+			                  positive)
+			            \item More esoteric: String kernel, chi-square kernel, histogram
+			                  intersection kernel, \dots
+		            \end{itemize}
+	      \end{itemize}
+\end{itemize}
+
+\subsection{Multi-Class Classification}
+Many SVM packages already have built-in multi-class classification functionality.
+Otherwise, use one vs all method.
+
+\subsection{Logistic Regression vs SVM}
+If $n \ge m$ (say $n = 10,000$ and $m = 10$ to $1000$), use logistic regression or SVM
+without kernel (linear kernel).
+
+If $n$ is small (say upto $1000$), $m$ is intermediate (say upto $10,000$), use SVM with
+Gaussian Kernel.
+
+If $n$ is small (say upto $1000$), $m$ is large (say $50,000+$), SVM with Gaussian Kernels
+may start struggling. Create/Add more features, then use logistic regression or SVM without
+a kernel.
+
+Neural Network likely to work well for most of these settings, but may be slower to train.
+
+SVM is a convex optimization problem, so no need to worry about local optima.
+
+\blfootnote{Check \href{lecture_pdf/Lecture12.pdf}{Lecture12.pdf} for more details.}
