@@ -35,6 +35,21 @@
 \DeclareMathOperator*{\minimize}{minimize}
 %%%
 
+% Theorem environments
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{observation}[theorem]{Observation}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{question}[theorem]{Question}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
 %%%
 \def\N{\mathbb{N}}
 \def\Z{\mathbb{Z}}
@@ -70,6 +85,7 @@
 
 \include{chapters/introduction}
 
+\part{Supervised Learning}
 \include{chapters/univariateLinearRegression}
 
 \include{chapters/linearAlgebra}
@@ -91,6 +107,9 @@
 \include{chapters/systemDesign}
 
 \include{chapters/svm}
+
+\part{Unsupervised Learning}
+\include{chapters/clustering}
 
 %%% chapter endnote
 % \blfootnote{Check \href{lecture_pdf/Lecture1.pdf}{Lecture1.pdf} for more details.}

@@ -1,0 +1,114 @@
+\chapter{Clustering}
+\section{Unsupervised Learning}
+Learning from unlabelled data as opposed to supervised learning. Give data to the algorithm
+to find some \emph{structure} in our data.
+
+\section{Clustering}
+Group data in different \emph{clusters}.
+
+\subsection{Application}
+\begin{itemize}
+	\item Market Segmentation
+	\item Social Network Analysis
+	\item Organize Computer Clusters
+	\item Astronomical Data Analysis
+\end{itemize}
+
+\section{$K$-means}
+\subsection{Algorithm}
+\paragraph{Informally:}
+Suppose we want to group the data into two clusters.
+\begin{enumerate}
+	\item Randomly initialize two cluster centroids.
+	\item Assign each data point to a cluster centroid based on some \emph{distance}
+	      measure.
+	\item Update cluster centroid to the average of each data point in the same
+	      cluster.
+	\item Go back to step 2 until convergence.
+\end{enumerate}
+
+\paragraph{Formally}:\\
+Input:
+\begin{itemize}
+	\item $K$ (number of clusters)
+	\item Training set $\{x^{(1)}, x^{(2)}, \dots, x^{(m)}\}$
+\end{itemize}
+
+\begin{remark}
+	$x^{(i)} \in \R^n$ (Drop $x_0 = 1$ as convention)
+\end{remark}
+
+\begin{minted}[escapeinside=||]{c}
+Randomly initialize |$K$| cluster centroids |$\mu_1, \mu_2, \dots, \mu_K \in \R^n$|
+Repeat {
+	for |$i$| = 1 to |$m$|
+		|$c^{(i)}$| := index (from 1 to |$K$|) of cluster centroid
+			closest to |$x^{(i)}$|
+	for |$k$| = 1 to |$K$|
+		|$\mu_k$| := average (mean) of points assigned to cluster |$k$|
+}
+\end{minted}
+
+\begin{remark}
+	If we get a cluster centroid with zero data points in it, the common thing to do is to
+	entirely eliminate that centroid and get $K-1$ clusters. But if you really need $K$
+	clusters, you can randomly reinitialize the centroid.
+\end{remark}
+
+\subsection{$K$-means for non-separated clusters}
+\paragraph{Example:} T-shirt sizing (S/M/L) based on weight and height.
+
+\subsection{Optimization Objective}
+\subsubsection{Notations}
+\begin{align*}
+	c^{(i)}       & = \text{index of cluster } (1, 2, \dots, K) \text{ to which example }
+	x^{(i)} \text{ is currently}                                                          \\
+	              & \ \ \ \ \text{assigned}                                               \\
+	\mu_k         & = \text{cluster centroid } k\  (\mu_k \in \R^n)                       \\
+	\mu_{c^{(i)}} & = \text{cluster centroid of cluster to which example } x^{(i)}
+	\text{ has been }                                                                     \\
+	              & \ \ \ \ \text{assigned}                                               \\
+\end{align*}
+
+\subsubsection{Cost Function}
+Also called \emph{distortion} cost function or
+\emph{distortion} of the $K$-means algorithm.
+\begin{equation*}
+	J(c^{(1)}, \dots, c^{(m)}, \mu_1, \dots, \mu_K) =
+	\frac{1}{m} \sum_{i=1}^m \norm{x^{(i)} - \mu_{c^{(i)}}}^2
+\end{equation*}
+
+\subsubsection{Optimization Objective}
+\begin{equation*}
+	\min_{\substack{c^{(1)}, \dots, c^{(m)},\\ \mu_1, \dots, \mu_K}}
+	J(c^{(1)}, \dots, c^{(m)}, \mu_1, \dots, \mu_K)
+\end{equation*}
+
+\subsection{Random Initialization}
+Many ways, but this one usually works better in most cases.
+Should have $K < m$. Randomly pick $K$ training examples as
+cluster centroids.
+
+\subsubsection{Local Optima}
+On bad days, $K$-means can get stuck in local optima. To avoid, we can initialize
+multiple times. Concretely, repeat about 100 times (usually 50 to 1000 times) and
+choose the way with least distortion.
+
+For small $K$ (2 to 10), multiple initialization is likely to give better solution
+while for larger $K$s, it's highly likely that your first solution was pretty good
+already and not make a huge difference.
+
+\subsection{Choosing \texorpdfstring{$K$}{}}
+Still the most common thing is to choose the number of clusters by hand.
+Below are other thoughs.
+
+\subsubsection{Elbow Method}
+Plot distortion against the number of clusters. Find the \emph{elbow}
+in the plot. Maybe that is a good number of clusters. Pretty good way
+if the graph goes down rapidly and then slowly later. But, not used that
+often coz often the elbow is very often very ambiguous.
+
+Sometimes, we run $K$-means to get clusters for some later purpose. Evaluate
+based on metric for how well it performs for that later purpose.
+
+\blfootnote{Check \href{lecture_pdf/Lecture13.pdf}{Lecture13.pdf} for more details.}
