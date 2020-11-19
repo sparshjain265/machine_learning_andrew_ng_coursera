@@ -42,23 +42,31 @@ For convinience, define $x_0 = 1$. So
 \section{Gradient Descent}
 
 \begin{align*}
-    \text{Hypothesis}       & :  h_\theta(x) = \theta^Tx
-                            & = \theta_0x_0 + \theta_1x_1 + \dots + \theta_nx_n              \\
-    \text{Parameters}       & : \theta
-                            & =\theta_0, \theta_1, \dots, \theta_n                           \\
-    \text{Cost Function}    & : J(\theta) = J(\theta_0, \theta_1, \dots, \theta_n)
-                            & =\frac{1}{2m}\sum_{i=1}^m(h_\theta(x^{(i)}) - y^{(i)})^2       \\
-    \text{Gradient Descent} & :                                                              \\
-                            & \text{Repeat} \{                                               \\
-    \theta_j                & : =
-    \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta)                              \\
-                            & =
-    \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta_0, \theta_1, \dots, \theta_n) \\
-                            & =
-    \theta_j - \alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x^{(i)} - y^{(i)})x_j^{(i)})           \\
-    \}                      & (\text{simultaneously update }
-    \forall j = 0, 1, \dots, n)
+    \text{Hypothesis}    & :  h_\theta(x) = \theta^Tx
+                         & = \theta_0x_0 + \theta_1x_1 + \dots + \theta_nx_n        \\
+    \text{Parameters}    & : \theta
+                         & =\theta_0, \theta_1, \dots, \theta_n                     \\
+    \text{Cost Function} & : J(\theta) = J(\theta_0, \theta_1, \dots, \theta_n)
+                         & =\frac{1}{2m}\sum_{i=1}^m(h_\theta(x^{(i)}) - y^{(i)})^2 \\
+    % \text{Gradient Descent} & :                                                              \\
+    %                         & \text{Repeat} \{                                               \\
+    % \theta_j                & : =
+    % \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta)                              \\
+    %                         & =
+    % \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta_0, \theta_1, \dots, \theta_n) \\
+    %                         & =
+    % \theta_j - \alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x^{(i)} - y^{(i)})x_j^{(i)})           \\
+    % \}                      & (\text{simultaneously update }
+    % \forall j = 0, 1, \dots, n)
 \end{align*}
+\paragraph{Gradient Descent:}
+\begin{minted}[escapeinside=||]{c}
+    repeat{
+        |$\theta_j := \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta)$|
+            |$ = \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta_0, \theta_1, \dots, \theta_n)$|
+            |$ = \theta_j - \alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x^{(i)} - y^{(i)})x_j^{(i)})$|
+    }(simultaneously update |$\forall j = 0, 1, \dots, n$|)
+\end{minted}
 
 \subsection{Feature Scaling}
 \paragraph{Idea:} Make sure features are on a similar scale.
