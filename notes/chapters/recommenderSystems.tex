@@ -1,0 +1,237 @@
+\chapter{Recommender Systems}
+\section{Problem Formulation}
+\paragraph{Example:} Predicting movie ratings! Collect movie ratings from users
+for the movies they have watched, and predict ratings for the movies they haven't
+watched.
+\paragraph{Notations:}
+\begin{align*}
+	n_u ={}       & \text{no. users}                             \\
+	n_m ={}       & \text{no. movies}                            \\
+	r(i, j) ={}   & \text{$1$ if user $j$ has rated movie $i$}   \\
+	y^{(i,j)} ={} & \text{rating given by user $j$ to movie $i$} \\
+	              & \text{(defined only if $r(i, j) = 1$)}
+\end{align*}
+
+\section{Content-Based Recommendations}
+Features could be the degree of genre of the movie, say romance or action.
+
+One way could be, for each user $j$, learn a parameter $\theta^{(j)} \in R^{n+1}$.
+Predict user $j$ as rating movie $i$ with $(\theta^{(j)})^Tx^{(i)}$ stars.
+
+\paragraph{Notations:}
+\begin{align*}
+	n ={}                       & \text{no. features}                             \\
+	\theta^{(j)} ={}            & \text{parameter vector for user $j$}            \\
+	x^{(i)} ={}                 & \text{feature vector for movie $i$}             \\
+	(\theta^{(j)})^Tx^{(i)} ={} & \text{predicted rating for user $j$, movie $i$} \\
+	m^{(j)} ={}                 & \text{no. movies rated by user $j$}
+\end{align*}
+
+\paragraph{To learn $\theta^{(j)}$:}
+\begin{align*}
+	\min_{\theta^{(j)}} {} & \left(
+	\frac{1}{2m^{(j)}}\sum_{i: r(i, j) = 1}\left(
+		\left(\theta^{(j)}\right)^T\left(x^{(i)}\right) - y^{(i,j)}
+		\right)^2 + \frac{\lambda}{2m^{(j)}}\sum_{k=1}^n\left(
+		\theta_k^{(j)}
+		\right)^2
+	\right)
+\end{align*}
+For recommender systems, we make some simplifications:
+\begin{itemize}
+	\item Get rid of the constant $m^{(j)}$
+\end{itemize}
+
+\subsection{Optimization Objective}
+To learn $\theta^{(j)}$ (parameter for user $j$):
+\begin{align*}
+	\min_{\theta^{(j)}} {} & J(\theta^{(j)}) \\
+	\min_{\theta^{(j)}} {} & \left(
+	\half\sum_{i: r(i, j) = 1}\left(
+		\left(\theta^{(j)}\right)^T\left(x^{(i)}\right) - y^{(i,j)}
+		\right)^2 + \frac{\lambda}{2}\sum_{k=1}^n\left(
+		\theta_k^{(j)}
+		\right)^2
+	\right)
+\end{align*}
+To learn $\theta^{(1)}, \theta^{(2)}, \dots, \theta^{(n_u)}$:
+\begin{align*}
+	\min_{\theta^{(1)}, \dots, \theta^{(n_u)}} {} &
+	J(\theta^{(1)}, \dots, \theta^{(n_u)})                 \\
+	\min_{\theta^{(1)}, \dots, \theta^{(n_u)}} {} & \left(
+	\half\sum_{j=1}^{n_u}\sum_{i: r(i, j) = 1}\left(
+		\left(\theta^{(j)}\right)^T\left(x^{(i)}\right) - y^{(i,j)}
+		\right)^2 + \frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n\left(
+		\theta_k^{(j)}
+		\right)^2
+	\right)
+\end{align*}
+
+\subsection{Optimization Algorithm}
+Gradient descent update:
+\begin{align*}
+	\theta_k^{(j)} :={} & \theta_k^{(j)} - \alpha\sum_{i:r(i, j) = 1}\left(
+	\left(\theta^{(j)}\right)^Tx^{(i)} - y^{(i, j)}
+	\right)x_k^{(i)} {} & (\text{for } k = 0)                               \\
+	\theta_k^{(j)} :={} & \theta_k^{(j)} - \alpha\left(
+	\sum_{i:r(i, j) = 1}\left(
+	\left(\theta^{(j)}\right)^Tx^{(i)} - y^{(i, j)}
+	\right)x_k^{(i)} + \lambda\theta_k^{(j)}
+	\right) {}          & (\text{for } k = 0)
+\end{align*}
+
+\section{Collaborative Filtering}
+Feature Learning!
+
+Each user $j$ just tells us how much they like different types of movies $\theta^{(j)}$.
+If we get these parameters from the users, then it is possible to infer what are the
+features for each movie from the ratings.
+
+\subsubsection{Optimization Algorithm}
+Given $\theta^{(1)}, \theta^{(2)}, \dots, \theta^{(n_u)}$, to learn $x^{(i)}$:
+\begin{align*}
+	\min_{x^{(i)}} {} & \left(
+	\half\sum_{j: r(i, j) = 1}\left(
+	\left(\theta^{(j)}\right)^T\left(x^{(i)}\right) - y^{(i,j)}
+	\right)^2 + \frac{\lambda}{2}\sum_{k=1}^n\left(
+	x_k^{(i)}
+	\right)^2
+	\right)
+\end{align*}
+Given $\theta^{(1)}, \theta^{(2)}, \dots, \theta^{(n_u)}$,
+to learn $x^{(1)}, \dots, x^{(n_m)}$:
+\begin{align*}
+	\min_{x^{(i)}} {} & \left(
+	\half\sum_{i=1}^{n_m}\sum_{j: r(i, j) = 1}\left(
+	\left(\theta^{(j)}\right)^T\left(x^{(i)}\right) - y^{(i,j)}
+	\right)^2 + \frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n\left(
+	x_k^{(i)}
+	\right)^2
+	\right)
+\end{align*}
+
+\subsubsection{Collaboration}
+Guess $\theta \to x \to \theta \to x \to $\dots
+
+\subsection{Algorithm}
+Minimizing $x^{(1)}, \dots, x^{(n_m)}$ and $\theta^{(1)}, \dots, \theta^{(n_u)}$
+simultaneously:
+\begin{align*}
+	J(x^{(1)}, \dots, x^{(n_m)}, \theta^{(1)}, \dots, \theta^{(n_u)})
+	={}   &
+	\half\sum_{(i, j):r(i, j) = 1}\left(
+	\left(\theta^{(j)}\right)^Tx^{(i)} - y^{(i, j)}
+	\right)^2                                                                       \\
+	      & + \frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n\left(x_k^{(i)}\right)^2
+	+ \frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n\left(\theta^{(j)}\right)^2      \\ \\
+	\min_{\substack{
+	x^{(1)}, \dots, x^{(n_m)}                                                       \\
+			\theta^{(1)}, \dots, \theta^{(n_u)}
+	}} {} & J(x^{(1)}, \dots, x^{(n_m)}, \theta^{(1)}, \dots, \theta^{(n_u)})
+\end{align*}
+When learning features this way, we're going to do away with $x_0 = 1$ and hence, now
+our $x \in \R^n$ and $\theta \in \R^n$, and the reason is that now that we're learning
+the features, if there is a need for such a feature, the algorithm can learn it by itself.
+
+\subsubsection{Collaborative Filtering Algorithm}
+\begin{enumerate}
+	\item Initialize $x^{(1)}, \dots, x^{(n_m)}$ and $\theta^{(1)}, \dots, \theta^{(n_u)}$
+	      to small random values (just like neural network).
+	\item Minimize $J(x^{(1)}, \dots, x^{(n_m)}, \theta^{(1)}, \dots, \theta^{(n_u)})$
+	      using Gradient Descent (or an advanced optimization algorithm). \\
+	      E.g. for every
+	      $j = 1, \dots, n_u, i = 1, \dots, n_m$:
+	      \begin{align*}
+		      x_k^{(i)} :={}      & x_k^{(j)} - \alpha\left(
+		      \sum_{i:r(i, j) = 1}\left(
+		      \left(\theta^{(j)}\right)^Tx^{(i)} - y^{(i, j)}
+		      \right)\theta_k^{(j)} + \lambda x_k^{(i)}
+		      \right)                                             \\
+		      \theta_k^{(j)} :={} & \theta_k^{(j)} - \alpha\left(
+		      \sum_{i:r(i, j) = 1}\left(
+		      \left(\theta^{(j)}\right)^Tx^{(i)} - y^{(i, j)}
+		      \right)x_k^{(i)} + \lambda\theta_k^{(j)}
+		      \right)
+	      \end{align*}
+	\item For a user with parameters $\theta$ and a movie with (learned) features $x$,
+	      predict a star rating of $\theta^Tx$.
+\end{enumerate}
+
+\section{Vectorization: Low Rank Matrix Vectorization}
+\subsection{Vectorization}
+\begin{align*}
+	Y ={}      & \begin{bmatrix}
+		y^{(i,j)}
+	\end{bmatrix} \\
+	={}        & \begin{bmatrix}
+		\left(\theta^{(j)}\right)^Tx^{(i)}
+	\end{bmatrix} \\
+	X ={}      & \begin{bmatrix}
+		\text{-----} & \left(x^{(1)}\right)^T   & \text{-----} \\
+		\text{-----} & \left(x^{(2)}\right)^T   & \text{-----} \\
+		             & \vdots                   &              \\
+		\text{-----} & \left(x^{(n_m)}\right)^T & \text{-----} \\
+	\end{bmatrix} \\
+	\Theta ={} & \begin{bmatrix}
+		\text{-----} & \left(\theta^{(1)}\right)^T   & \text{-----} \\
+		\text{-----} & \left(\theta^{(2)}\right)^T   & \text{-----} \\
+		             & \vdots                        &              \\
+		\text{-----} & \left(\theta^{(n_u)}\right)^T & \text{-----} \\
+	\end{bmatrix} \\
+	Y ={}      & X\Theta^T                  \\
+\end{align*}
+Name \emph{Low Rank Matrix Vectorization} comes from the fact that $X\Theta^T$
+is a \emph{Low Rank Matrix}.
+
+\subsection{Finding related movies}
+\paragraph{Q:}
+For each product $i$, we learn a feature vector $x^{(i)} \in \R^n$. How to find
+movies $j$ related to movie $i$?
+\paragraph{A:}
+Small $\norm{x^{(i)} - x^{(j)}} \to$ movies $j$ and $i$ are similar.
+\\5 most similar movies to $i$:\\
+Find the 5 movies $j$ with the smallest $\norm{x^{(i)} - x^{(j)}}$
+
+\section{Implementational Detail: Mean Normalization}
+Let's consider an example of a user who hasn't rated any movie. So in our
+optimization objective
+\begin{align*}
+	\min_{\substack{
+	x^{(1)}, \dots, x^{(n_m)} \\
+			\theta^{(1)}, \dots, \theta^{(n_u)}
+	}} {} &
+	\half\sum_{(i, j):r(i, j) = 1}\left(
+	\left(\theta^{(j)}\right)^Tx^{(i)} - y^{(i, j)}
+	\right)^2
+	+ \frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n\left(x_k^{(i)}\right)^2
+	+ \frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n\left(\theta^{(j)}\right)^2
+\end{align*}
+the first term plays no role, and hence we have to minimize $\frac{\lambda}{2}
+	(\theta_1^2 + \theta_2^2)$ which will give $\theta = \begin{bmatrix}
+		0 \\
+		0 \\
+	\end{bmatrix}$ and so we will predict $\theta^Tx = 0$ for all $x$, which
+will give us no good way to recommend movies to the new user. So, calculate
+mean rating for each movie and subtract the mean from all ratings (so that
+each movie has a mean rating of zero).
+
+% \subsection{Mean Normalization}
+\begin{align*}
+	Y ={}         & \begin{bmatrix}
+		y^{(1,j)}   \\
+		y^{(2,j)}   \\
+		\vdots      \\
+		y^{(n_m,j)} \\
+	\end{bmatrix} \\
+	\mu ={}       & \begin{bmatrix}
+		\text{mean}(y^{(1)})   \\
+		\text{mean}(y^{(2)})   \\
+		\vdots                 \\
+		\text{mean}(y^{(n_m)}) \\
+	\end{bmatrix} \\
+	Y_{new} := {} & Y - \mu
+\end{align*}
+Now, learn $\theta^{(j)}, x^{(i)}$ on this $Y_{new}$.\\
+For user $j$, on the movie $i$ predict: $(\theta^{(j)})^T(x^{(i)}) + \mu_i$
+
+\blfootnote{Check \href{lecture_pdf/Lecture16.pdf}{Lecture16.pdf} for more details.}
