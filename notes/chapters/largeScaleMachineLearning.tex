@@ -1,0 +1,205 @@
+\chapter{Large Scale Machine Learning}
+\section{Learning with Large Datasets}
+Learning Algorithms usually work better when trained on larger datasets.
+
+\subsection{Problems}
+Computational Expense! When $m = 100,000,000$, each update of a gradient
+takes much longer.
+
+\subsection{Sanity Check}
+A method of sanity check that $m = 1000$ would do just as well,
+plot $J_{train}(\theta)$ and $J_{cv}(\theta)$ and if it
+shows high variance, increasing $m$ makes sense.
+
+\section{Stochastic Gradient Descent}
+Gradient Descent becomes very computationally expensive for large
+training sets. Modify to allow us to scale better.
+
+\subsection{Linear Regression}
+Linear Regression only for demonstration, works well for other problems.
+\begin{align*}
+	h_\theta(x) ={}       & \theta^Tx                                       \\
+	J_{train}(\theta) ={} & \frac{1}{2m}\sum_{i=1}^m \left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)^2                                                               \\
+	\theta_j :={}         & \theta_j - \alpha\frac{1}{m}\sum_{i=1}^m \left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)x_j^{(i)}      & \text{(Batch Gradient Descent)}
+\end{align*}
+In contrast to Batch Gradient Descent, we get new algorithm with
+does not have to go through each training example in each iteration.
+
+\subsection{Stochastic Gradient Descent}
+Rewrite as:
+\begin{align*}
+	{cost}(\theta, (x^{(i)}, y^{(i)})) ={} & \half \left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)^2                                                        \\
+	J_{train}(\theta) ={}                  & \frac{1}{m}\sum_{i=1}^m
+	{cost}(\theta, (x^{(i)}, y^{(i)}))                               \\
+\end{align*}
+\paragraph{Algorithm:}
+Repeat 1 to 10 times:
+\begin{minted}[linenos, breaklines, breakanywhere, mathescape, escapeinside=||]{octave}
+Randomly shuffle dataset;
+
+repeat {
+	for |$i = 1, \dots, m$|{
+		|$\theta_j := \theta_j - \alpha\left(h_\theta(x^{(i)}) - y^{(i)}\right)x_j^{(i)}$| (for all |$j$|)
+	}
+}
+\end{minted}
+
+\section{Mini-Batch Gradient Descent}
+Can sometimes work even faster than Stochastic Gradient Descent!
+
+\begin{tabularx}{0.9\linewidth}{l c X}
+	Batch Gradient Descent      & : &
+	Use all $m$ examples in each iteration \\
+	Stochastic Gradient Descent & : &
+	Use $1$ example in each iteration      \\
+	Mini-Batch Gradient Descent & : &
+	Use $b$ examples in each iteration     \\
+\end{tabularx}
+
+where $b = $ mini-batch size, usually $\in [2, 100]$
+
+\paragraph{Algorithm}
+\begin{minted}[linenos, breaklines, breakanywhere, mathescape, escapeinside=||]{octave}
+Randomly shuffle dataset;
+
+repeat {
+	for |$i = 1, i+b-1, i+2*b-1, \dots$|{
+		|$\theta_j := \theta_j - \alpha\frac{1}{b}\sum_{k=i}^{i+b-1}\left(h_\theta(x^{(k)}) - y^{(k)}\right)x_j^{(k)}$| 
+		(for all |$j$|)
+	}
+}
+\end{minted}
+
+\paragraph{Q:} Why $b$ instead of $1$?
+\paragraph{A:} Vectorization
+
+\paragraph{Disadvantage:} New parameter $b$.
+
+\section{Convergence}
+\subsection{Checking for Convergence}
+\begin{itemize}
+	\item Previously, we could plot the cost funcion over time! Now?
+	\item During Learning, compute ${cost}{\theta, (x^{(i)}, y^{(i)})}$ before
+	      updating $\theta$.
+	\item Every few (say $1000$) iterations, plot cost averaged over the last $1000$ examples
+	      processed by algorithm.
+	\item Sometimes, a smaller learning rate can give you better optimization because
+	      Stochastic Gradient Descent doesn't really converge, rather oscillates near
+	      the optimal value, so smaller learning rate means less noisy oscillations.
+	\item Increasing over the number of iterations to plot the cost may give you a smoother
+	      plot with the disadvantage of delayed feedback.
+	\item Sometimes, it may look like the cost is not decreasing, but the decreasing trend
+	      may be visible by delaying the feedback.
+	\item Increasing is a sign of divergence, lower your $\alpha$.
+	\item In most cases of stochastic gradient descent, learning rate $\alpha$ is
+	      typically held constant. But, you can decrease slowly if you want to
+	      converge like $\alpha = \frac{const1}{iterationNumber + const2}$
+\end{itemize}
+
+\section{Online Learning}
+Learn from incoming stream of data.
+
+\subsection{Example} Shipping service website where user comes, specifies origin and
+destination, you offer to ship their package for some asking price, and users
+sometimes choose to use your shipping service ($y = 1$), sometimes not ($y = 0$).
+We want to optimize the asking price to offer our users.
+
+Features $x$ capture
+properties of user, of origin/destination and asking price. We want to learn
+$p(y = 1|x;\theta)$ to optimize price.
+
+We can choose, logistic regression?
+
+\subsection{Algorithm}
+\begin{minted}[linenos, breaklines, breakanywhere, mathescape, escapeinside=||]{octave}
+repeat forever{
+	get (x, y) corresponding to user
+	update |$\theta$| using |$(x, y)$|:
+		|$\theta_j := \theta_j - \alpha(h_\theta(x) - y)x_j$|
+		for all j
+}
+\end{minted}
+
+\begin{remark}
+	Can adapt to changing user prefernces.
+\end{remark}
+
+\subsection{Other Examples}
+\begin{itemize}
+	\item Product search (learning to search) \begin{itemize}
+		      \item User searches for "Android phone 1080p camera"
+		      \item Have 100 phones in store. Will return 10 results.
+		      \item $x = $ features of phone, how many words in user query match
+		            name of the phone, description of the phone, etc.
+		      \item $y = 1$ if user clicks on link. $y = 0$ otherwise.
+		      \item Learn $p(y = 1|x; \theta)$
+		      \item Click Through Rate (CTR)
+		      \item Use this to show user the 10 phones they're most likely
+		            to click on.
+	      \end{itemize}
+	\item Choosing special offers to show user
+	\item Customized selection of news articles
+	\item Product Recommendations
+\end{itemize}
+
+\section{Map-reduce and data parallelism}
+Can be used to scale learning algorithm to far larger than possible with even
+stochastic gradient descent.
+
+\subsection{Map-reduce}
+\subsubsection{Batch gradient descent}
+We are going to assume $m = 400$ but this is probably applied where $m = 400,000,000$
+and four machines.
+\begin{align*}
+	\theta_j :={} & \theta_j - \alpha \frac{1}{400} \sum_{i=1}^{400} \left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)x_j^{(i)}
+\end{align*}
+
+\paragraph{Machine 1:} Use $(x^{(1)}, y^{(1)}), \dots, (x^{(100)}, y^{(100)})$
+\begin{align*}
+	{temp}_j^{(1)} ={} & \sum_{i=1}^{100} \left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)x_j^{(i)}
+\end{align*}
+\paragraph{Machine 2:} Similarly get ${temp}_j^{(2)}$
+\paragraph{Machine 3:} Get ${temp}_j^{(3)}$
+\paragraph{Machine 4:} Get ${temp}_j^{(4)}$
+\paragraph{Master Server:} Combine
+\begin{align*}
+	\theta_j :={} & \theta_j - \alpha\frac{1}{400}\left(
+	temp_j^{(1)} + temp_j^{(2)} + temp_j^{(3)} + temp_j^{(4)}
+	\right)       & (\text{for all } j)                  \\
+\end{align*}
+
+\subsection{Summation over the training set}
+Many learning algorithms can be expressed as computing sums of functions
+over the training set. Hence, can be parallelized easily using map-reduce.
+
+\subsubsection{Example}
+Logistic Regression
+\begin{align*}
+	J_{train}(\theta) ={}                                  &
+	-\frac{1}{m}\sum_{i=1}^m\left(
+	y^{(i)}\log(h_\theta(x^{(i)})) - (1 - y^{(i)})\log(1 - h_\theta(x^{(i)}))
+	\right)                                                  \\
+	\frac{\partial}{\partial\theta_j}J_{train}(\theta) ={} &
+	\frac{1}{m}\sum_{i=1}^m\left(
+	h_\theta(x^{(i)}) - y^{(i)}
+	\right)x_j^{(i)}
+\end{align*}
+
+\subsection{Multi-core machines}
+Parallelize to different cores!
+
+\begin{remark}
+	Some numerical linear algebra libraries automatically parallelize for you!
+\end{remark}
+
+\blfootnote{Check \href{lecture_pdf/Lecture17.pdf}{Lecture17.pdf} for more details.}
