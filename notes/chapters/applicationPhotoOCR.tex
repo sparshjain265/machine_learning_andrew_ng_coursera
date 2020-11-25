@@ -1,0 +1,107 @@
+\chapter{Application Example: Photo OCR}
+\section{Problem Description and Pipeline}
+\subsection{Photo Optical Character Recognition} It focuses to read the text
+in an image. Very difficult compared to PDF OCR.
+
+\subsection{Photo OCR Pipeline}
+\begin{enumerate}
+	\item Text detection
+	\item Character segmentation
+	\item Character classification
+	\item Spelling Correction (Optional)
+\end{enumerate}
+Different people working on different parts of a pipeline!
+
+\section{Sliding Windows}
+\subsection{Pedestrial Detection: Supervised Learning}
+Aspect Ratio in a \emph{Pedestrian Detection} is roughly fixed while not so
+in text detection.
+\begin{enumerate}
+	\item $x = $ pixels in $82 \times 36$ image patches
+	\item Get large training set of positive and negative examples
+	\item Learn, given an image patch, whether or not a pedestrian exists in it
+	\item \textbf{Sliding Window Detection:} Take a rectangular patch and shift it
+	      throughout the image and check for pedestrian. The \emph{step size} or \emph{stride}
+	      to slide the \emph{window} works best at $1$ but is more computationally expensive
+	      so $4$ or $8$ or some large number of pixels at a time is more common.
+	\item Then, take larger patches and repeat.
+\end{enumerate}
+\subsection{Text Detection}
+\begin{enumerate}
+	\item Similar to pedestrian detection, get large training set of positive
+	      and negative examples and train on it.
+	\item Apply it to a new test image i.e. run on all image patches (for simplicity,
+	      of the same size in our example).
+	\item Take output, and apply \emph{expansion operator}. It takes each of the \emph{positive}
+	      region and expands it. Specifically, if a pixel is within a specific distance
+	      of a positive pixel, mark it positive as well.
+	\item We can now look at \emph{connected components} of positive pixels.
+	\item Simply discard boxes of \emph{funny} aspect ratios (for texts, boxes should be
+	      generally wider than they are tall).
+\end{enumerate}
+
+\subsection{1D Sliding Window for character segmentation}
+\begin{enumerate}
+	\item Again, use supervised learning algorithm.
+	\item Look at an image patch, and decide if there is a split right in the middle
+	      of the image patch.
+	\item Slide in one dimension, and segment the characters.
+\end{enumerate}
+
+\subsection{Character classification}
+Classic multi-class classification problem!
+
+\section{Artificial Data Synthesis}
+Doesn't apply to every problem, and needs thought, idea, innovation, and insight.
+\begin{enumerate}
+	\item Create data from scratch
+	\item Having a small dataset and creating a larger dataset out of it
+\end{enumerate}
+
+\subsection{Character Recognition}
+\subsubsection{Creating data from scratch}
+Fonts in your system, plus font libraries! Take these characters and paste them
+on a random background. After some amount of work (synthesise realistic looking
+data) like blurring, affine transformation etc.
+\subsubsection{Synthesizing data by introducing distortions}
+Introduce artificial distortions/warpings to create new examples.
+
+\begin{remark}
+	Again, it takes thought and insight to figure out what are reasonable ways to do
+	this.
+\end{remark}
+
+\subsubsection{Speech Recognition}
+Introduce additional audio distortions in the dataset like different background sounds.
+
+\subsection{Remarks:}
+\begin{itemize}
+	\item Distortions introduced should be representative of the type of
+	      noise/distortions in the test set.
+	\item Usually does not help to add purely random/meaningless noise to
+	      your data.
+	\item A little artistic! Sometimes need to apply and see!
+	\item Make sure you have a low bias classifier before expending the
+	      effort. (Plot learning curves). E.g. keep increasing the number
+	      of features/number of hidden units in neural network.
+	\item "How much work would it be to get a $10\times$ as much data as
+	      we currently have?" \begin{itemize}
+		      \item Artificial Data Synthesis (Scratch or Distortions)
+		      \item Collect/label it yourself
+		      \item "Crowd source" (E.g. Amazon Mechanical Turk)
+	      \end{itemize}
+\end{itemize}
+
+\section{Ceiling Analysis: What part of the pipeline to work on next}
+What part of the pipeline should you spend the most time trying to improve?
+\begin{enumerate}
+	\item Have a single number evaluation metric.
+	\item For each stage of the pipeline, give it the correct labels and
+	      measure the evaluation metric again.
+	\item The stages which improve the metric hugely with correct labels,
+	      have a high chance that improving that stage is going to improve
+	      the performance of the whole system.
+\end{enumerate}
+
+
+\blfootnote{Check \href{lecture_pdf/Lecture18.pdf}{Lecture18.pdf} for more details.}
